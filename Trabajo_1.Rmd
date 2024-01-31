@@ -1,0 +1,307 @@
+---
+title: "Trabajo 1 de Análisis y Visualización de Datos"
+author: "Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera"
+date: "09 de marzo de 2023"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show
+---
+
+# Base de datos
+
+***cpus*** usado en el análisis está contenido en el paquete **MASS**. Contiene medidas sobre el rendimiento real y estimado de 209 CPUs, así como otras características técnicas.
+
+```{r}
+set.seed(157)
+library(MASS)
+data(cpus)
+datos <- cpus[,-1] 
+datos <- na.omit(datos) # Sin la variable `name` 
+datos
+```
+
+## Estadísticas descriptivas
+
+```{r}
+summary(datos)
+```
+
+## Selección de variables hacia atrás (backward)
+
+```{r}
+# Indices de entranamiento
+id.train <- sample(1:nrow(datos),size=0.75*nrow(datos),replace=FALSE) 
+datos.train <- datos[id.train,]
+datos.test <- datos[-id.train,] 
+```
+
+```{r}
+# Ajustar un modelo con todas las variables predictoras
+modelo <- lm(datos.train$perf ~ ., data = datos.train)
+# Realizar selección de variables hacia atrás
+modelo.back <- step(modelo, direction = "backward")
+summary(modelo.back)
+```
+En cada paso de los totales que hay se quita una variable más adecuada usando el criterio del menor AIC (Akaike Information Criterion).
+ 
+```{r}
+# Realizar predicciones
+nuevos.datos <- data.frame(datos.test)
+names(nuevos.datos) <- names(datos.test)
+predicciones <- predict(modelo.back, nuevos.datos)
+
+# Calcular la precisión del modelo
+
+# Calcular el error absoluto medio (MAE)
+MAE.backward <- mean(abs(predicciones - datos.test$perf))
+
+# El MSE mide el promedio de los errores al cuadrado, mientras que el MAE mide el promedio de los errores absolutos.
+
+# Calcular el coeficiente de determinación (R-cuadrado)
+R2.backward <- cor(predicciones, datos.test$perf)^2
+
+# Calcular el ECM (entreno)
+ECM.backward.train <- mean((datos.train$perf - predict(modelo.back, datos.train))^2)
+
+# Calcular el ECM (prueba)
+ECM.backward.test <- mean((datos.test$perf - predicciones)^2)
+
+cat("MAE:",MAE.backward, "R-cuadrado:",R2.backward)
+```
+
+```{r}
+resultados <- c(ECM.backward.train)
+resultados<-rbind(resultados, c(ECM.backward.test))
+colnames(resultados) <- c("Backward")
+rownames(resultados) <- c("Entrenamiento","Validación (test)")
+resultados
+```
+
+Gráfico de dispersión de los valores reales frente a las predicciones. La línea roja representa una línea diagonal que indica donde los valores reales son iguales a las predicciones. Idealmente, todos los puntos deberían estar cerca de esta línea.
+
+```{r warning=FALSE}
+# Crear el gráfico de dispersión
+library(ggplot2)
+# Unir datos prueba con la predicciones
+datos.train.pred <- cbind(datos.test, predicciones)
+
+backward.plot <- ggplot(datos.train.pred, aes(x = datos.test$perf, y = predicciones)) +
+  geom_point(color = "blue") +
+  geom_abline(color = "red") +
+  xlab("Valores reales") +
+  ylab("Predicciones") +
+  ggtitle("Predicciones del modelo ajustado (Backward)")
+
+
+backward.plot
+```
+
+## Regresión ridge
+
+```{r warning=FALSE}
+# Ajustar el modelo de regresión ridge usando el conjunto de entrenamiento
+library(glmnet)
+X.entrenamiento <- as.matrix(datos.train[, -1])
+y.entrenamiento <- datos.train$perf
+modelo.ridge <- cv.glmnet(X.entrenamiento, y.entrenamiento, alpha=0,type.measure ="mse",
+standardize=T)
+
+# Evaluar el modelo usando el conjunto de prueba
+X.prueba <- as.matrix(datos.test[, -1])
+y.prueba <- datos.test$perf
+predicciones.ridge <- predict(modelo.ridge, newx=X.prueba)
+R2.ridge <- cor(predicciones.ridge, y.prueba)^2
+ECM.ridge <- mean((y.prueba - predicciones.ridge)^2)
+
+# Imprimir resultados
+cat("R2:", R2.ridge, "ECM:", ECM.ridge)
+
+```
+
+Se crea un gráfico de dispersión que muestra los valores reales en el eje *x y* las predicciones del modelo en el eje y. La línea roja representa la línea de identidad, lo que indica la situación ideal donde los valores reales y las predicciones son iguales.
+
+```{r}
+# Graficar las predicciones del modelo en comparación con los valores reales
+ridge.plot <- plot(y.prueba, predicciones, pch=20, cex=0.8, xlab="Valores reales", ylab="Predicciones")  
+abline(0, 1, col="red")
+
+```
+
+El resultado de este código muestra una gráfica de dispersión con los puntos representando los valores reales y las predicciones del modelo. Los puntos deben estar cerca de la línea de identidad (roja), lo que indica que el modelo está haciendo buenas predicciones.
+
+El parámetro lambda es un factor de regularización que se utiliza para reducir el sobreajuste en el modelo.
+
+```{r}
+modelo.lambda<-cv.glmnet(x=X.entrenamiento,y=y.entrenamiento,alpha=0,
+                         type.measure=c("mse"),
+                         standarize=T)
+plot(modelo.lambda)
+```
+
+```{r}
+mejor.lambda<-modelo.lambda$lambda.min
+mejor.lambda
+```
+
+El log de del mejor lambda es igual a $log(mejor.lambda)=2.851789$. 
+
+Los coeficientes del modelo ridge son los coeficientes de la regresión ridge ajustada a los datos. El hecho de que un coeficiente sea mayor o menor no necesariamente indica que la variable correspondiente es la "mejor" del modelo.
+
+```{r warning=FALSE, message=FALSE}
+modelo.ridge.mlam <- glmnet(x=X.entrenamiento,y=y.entrenamiento,alpha=0,
+                     lambda=mejor.lambda)
+library(dplyr)
+df_coeficientes<-coef(modelo.ridge.mlam) %>% as.matrix() %>% as_tibble(rownames="predictor") %>% rename(coeficiente=s0)
+  #%>% une las funciones
+
+library(ggplot2)
+df_coeficientes %>% filter(predictor!="(Intercept)") %>% ggplot(aes(x=predictor,y=coeficiente)) + geom_col() +
+  labs(title="Coeficientes del modelo Ridge") + theme_bw()
+```
+
+```{r}
+predicciones.lam <- predict(modelo.ridge.mlam, newx=X.prueba)
+modelo.lambda.plot <- plot(y.prueba, predicciones.lam, pch=20, cex=0.8, xlab="Valores reales", ylab="Predicciones")
+abline(0, 1, col="red")
+```
+
+```{r}
+R2.ridge.lam <- cor(predicciones.lam, y.prueba)^2
+ECM.ridge.test.lam <- mean((y.prueba - predicciones.ridge)^2)
+predicciones.ridge.entrenamiento <- predict(modelo.ridge.mlam, newx=X.entrenamiento)
+ECM.ridge.train.lam <- mean((y.entrenamiento - predicciones.ridge.entrenamiento)^2)
+
+# Imprimir resultados
+cat("R2:", R2.ridge.lam, "ECM:", ECM.ridge.test.lam)
+```
+
+```{r}
+plot(y.prueba, predicciones.ridge, pch=20, cex=0.8, xlab="Valores reales", ylab="Predicciones", col="blue")
+points(y.prueba, predicciones.lam, pch=20, cex=0.8, col="red")
+title(main="Comparación de predicciones de dos modelos de regresión ridge")
+mtext("Modelo ridge", side=4, line=0, col="blue", cex=0.8)
+mtext("Modelo ridge (λ)", side=4, line=1, col="red", cex=0.8)
+abline(0, 1, col="black")
+```
+
+Como el Modelo Ridge tiene una calidad del modelo tanto para el mejor lambda cuanto para el normal la diferencia será pequeña en el ajuste de la predicción.
+
+Comparamos con el modelo anterior:
+
+```{r}
+resultados <- c(ECM.backward.train,ECM.ridge.train.lam)
+resultados<-rbind(resultados, c(ECM.backward.test,ECM.ridge.test.lam))
+colnames(resultados) <- c("Backward","Ridge")
+rownames(resultados) <- c("Entrenamiento","Validación (test)")
+resultados
+```
+
+Este modelo se comporta mejor que su antecesor *Selección de variables hacia atrás* (*Backward).* Este modelo se comporta mejor en validación. Seguimos con los próximos algoritmos en busca de una mejora al problema.
+
+## Regresion Lasso
+
+```{r message=FALSE}
+library(glmnet)
+
+#Dividimos los datos en conjunto de entrenamiento y de prueba
+train_idx <- sample(nrow(datos), round(0.75 * nrow(datos)))
+train_data <- datos[train_idx, ]
+test_data <- datos[-train_idx, ]
+
+#Buscamos la mejor lambda por el metodo de validacion cruzada
+x <- as.matrix(train_data[, -1])
+y <- train_data$perf
+cvfit <- cv.glmnet(x, y, alpha = 1)
+
+#Aplicamos el valor de lambda (minima)
+lambda_optima <- cvfit$lambda.min
+modelo_lasso <- glmnet(x, y, alpha = 1, lambda = lambda_optima)
+
+#Calculamos el Error Cuadratico Medio MSE  que sera lo que nos hemos confundido a la hora de predecir la variable perf con estos valores
+x_test <- as.matrix(test_data[, -1])
+y_test <- test_data$perf
+y_pred <- predict(modelo_lasso, newx = x_test)
+y_pred_train <- predict(modelo_lasso, newx = x)
+ECM.lasso.train <- mean((y - y_pred_train)^2)
+ECM.lasso.test <- mean((y_test - y_pred)^2)
+R2.lasso <- 1 - (ECM.lasso.test / var(y_test)) * ((nrow(x_test) - 1) / (nrow(x_test) - ncol(x_test) - 1))
+
+# Imprimir resultado
+cat("ECM:", ECM.lasso.test, "R2:", R2.lasso)
+```
+
+Ahora calculamos el ECM para este modelo:
+
+```{r}
+resultados <- c(ECM.backward.train,ECM.ridge.train.lam,ECM.lasso.train)
+resultados<-rbind(resultados, c(ECM.backward.test,ECM.ridge.test.lam,ECM.lasso.test))
+colnames(resultados) <- c("Backward","Ridge","Lasso")
+rownames(resultados) <- c("Entrenamiento","Validación (test)")
+resultados
+```
+
+Existe una redución significativa en comparación con los otros modelos, hay una mejora considerable en la validación. Este modelo es el mejor para predicir el rendimiento (*perf*).
+
+## Regresion KNN
+
+```{r}
+# Dividir los datos en conjuntos de entrenamiento y prueba
+datos.train <- datos[id.train, ]
+datos.test <- datos[-id.train, ]
+
+# Cargar el paquete "class"
+library(class)
+
+# Definir el número de vecinos
+k <- 3
+#Con k=3 vecinos da la precision mas alta de los valores posibles
+
+# Aplicar el algoritmo K-NN para clasificación
+predicciones <- knn(datos.train[, 1:4], datos.test[, 1:4], datos.train[, k], k)
+predicciones.train <- knn(datos.train[, 1:4], datos.train[, 1:4], datos.train[, k], k)
+
+ECM.knn.test <- mean((as.numeric(predicciones) - datos.test[, 5])^2)
+ECM.knn.train <- sqrt(mean((datos.train[, 5] - as.numeric(predicciones.train))^2))
+
+# Calcular la precisión del modelo
+precision <- mean(predicciones == datos.test[, k]); R2.knn <- precision
+cat("La precisión del modelo es:", precision)
+```
+
+```{r warning=FALSE} 
+# Crear el gráfico de dispersión
+library(ggplot2)
+# Unir datos prueba con la predicciones
+datos.train.pred <- cbind(datos.test, predicciones)
+
+backward.plot <- ggplot(datos.train.pred, aes(x = datos.test$perf, y = predicciones)) +
+  geom_point(color = "blue") +
+  geom_abline(color = "red") +
+  xlab("Valores reales") +
+  ylab("Predicciones") +
+  ggtitle("Predicciones del modelo ajustado (KNN)")
+
+
+backward.plot
+
+```
+
+Con el ECM de este modelo volvemos a comparar el valor ECM del conjunto de entranamiento y de prueba:
+
+```{r}
+resultados <- c(ECM.backward.train,ECM.ridge.train.lam,ECM.lasso.train,ECM.knn.train)
+resultados<-rbind(resultados, c(ECM.backward.test,ECM.ridge.test.lam,ECM.lasso.test,ECM.knn.test))
+colnames(resultados) <- c("Backward","Ridge","Lasso","KNN")
+rownames(resultados) <- c("Entrenamiento","Validación (test)")
+resultados
+```
+
+Este modelo no es capaz de predicir bien el predicir el rendimiento (*perf*). Así que, el mejor modelo para esta predicción es el Lasso.

@@ -1,0 +1,116 @@
+---
+title: "Practica1.1"
+author: "mfolguer"
+date: "2023-02-22"
+output: html_document
+---
+
+#1. Estudiar el modelo de regresión simple de la variable medv sobre lstat (el porcentaje de propietarios con bajo estatus socioeconómico).
+
+```{r}
+library(MASS)
+attach(Boston)
+modelo<-lm(medv~lstat)
+summary(modelo)
+
+library(ggplot2)
+grafico1<-ggplot(Boston,aes(lstat,medv))+
+geom_point(colour="green")+
+geom_smooth(method="lm",se=F,colour="red")+
+theme_bw()
+plot(grafico1)
+
+```
+
+#2. ¿Cuál es la recta de regresión para este modelo? ¿Qué coeficiente de 𝑅2 se alcanza con este modelo?
+
+```{r}
+x1=cov(medv,lstat)/var(lstat)
+x2=mean(medv)-x1*mean(lstat)
+#Recta de regresion=x1*lstat+x2   ->-0.95*lstat+34.55
+
+#Precision del modelo
+library(stats)
+modelo<-lm(medv~lstat)
+n=length(lstat)
+SCT=sum((medv-mean(medv))^2)
+SCR=sum(residuals(modelo)^2)
+R2=(SCT-SCR)/SCT
+#El R^2 es 0,54
+R2
+
+```
+
+#3. Supongamos que tenemos una vivienda en una nueva zona con un estatus socioeconómico (lstat) de 23.4, según el modelo de regresión simple ajustado, ¿qué predicción se obtiene para la mediana del valor de una vivienda en esta zona?
+
+```{r}
+library(MASS)
+attach(Boston)
+nuevo_lstat <- data.frame(lstat = 23.4)
+prediccion <- predict(modelo, newdata = nuevo_lstat)
+prediccion
+```
+
+#4. Haciendo uso de un modelo de selección de variables hacia atrás (backward), ¿cuáles son las 5 variables más importantes a la hora de predecir la mediana de los valores de la vivienda? Indica cuál es la recta de regresión resultante para este modelo
+
+```{r}
+library(MASS)
+attach(Boston)
+#  modelo  con todas las variables predictoras
+modelo <- lm(medv ~ ., data = Boston)
+#  el modelo  utilizando backward
+modelo1 <- step(modelo, direction = "backward")
+summary(modelo1)
+#Teniendo en cuenta el valor numerico de p-valor en cada iteracion hacia atras
+#Las 5 variables mas significativas serian: rm,ptratio,black,lstat,tax
+
+
+```
+
+#5¿Se aprecia una gran diferencia entre el ajuste producido por el modelo que incluye todas las variables regresoras y el modelo de regresión que cuenta con las 5 variables más importantes? Justifica la respuesta
+
+```{r}
+library(MASS)
+attach(Boston)
+modelo <- lm(medv ~ ., data = Boston)
+summary(modelo)
+#R² de 0.741
+modelo1 <- lm(medv ~ rm + ptratio + black + lstat + tax, data = Boston)
+summary(modelo1)
+#R² de 0.716
+#la diferencia entre los R² no es significativa
+#PEro el modelo que tiene todas las variables tiene un mejor ajuste y es mas preciso
+#Entonces se aprecia diferencia pero es mas ajustado usar todas las variables
+
+
+```
+
+#6. Basándote en el modelo de regresión que incluye 5 variables: Estudia si se verifican las hipótesis del modelo. #¿Consideras que es un modelo apropiado para predecir los valores medianos de la vivienda en Boston? Justifica tu respuesta.
+
+```{r}
+library(MASS)
+attach(Boston)
+modelo <- lm(medv ~ rm + ptratio + black + lstat + tax, data = Boston)
+summary(modelo)
+#Normalidad =No hay distribucion normal
+shapiro.test(resid(modelo))
+
+#homocedasticidad =sin varianza constante
+library(lmtest)
+bptest(modelo)
+
+#Linealidad =no lineal
+library(car)
+resettest(modelo)
+
+#Residuos 
+par(mfrow = c(2, 2))
+plot(modelo)
+
+#LAS HIPOTESIS DEL MODELO SE CUMPLEN
+
+
+#Ya que las hipotesis del modelo se cumplen para 5 variables es bastante esperanzador pero como disponemos de otras variables mas en el paquete MASS que ofrecen resultados mas ajustados seria conveniente usarlas
+
+
+```

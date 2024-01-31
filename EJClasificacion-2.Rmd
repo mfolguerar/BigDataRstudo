@@ -1,0 +1,281 @@
+---
+title: 'Ejercicio Clasificación: Regresión Logística, Análisis discriminante lineal,
+  cuadrático y KNN'
+author: "Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera"
+date: "2023-04-14"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show
+---
+
+# Base de datos
+
+El conjunto de datos **Auto** usado en el análisis que está contenido en el paquete **ISLR**. Contiene el resultado de observar 𝑝 = 9 variables sobre 𝑛 = 392 vehículos.
+
+```{r}
+library(ISLR)
+data(Auto)
+attach(Auto)
+Auto
+```
+
+```{r warning=FALSE}
+library("vcd")
+set.seed(1);
+metricas<-function(mc){ #mc es una matriz de confusión
+  esp<-mc[1,1]/sum(mc[,1])
+  sen<-mc[2,2]/sum(mc[,2])
+  ag<-sum(diag(mc))/sum(mc)
+  eg<-1-ag
+  m<-cbind(esp,sen,ag,eg)
+  colnames(m)=c("Especificidad","Sensibilidad","Exactitud","Error global")
+  rownames(m)="valor"
+  m
+}
+```
+
+# 1. Calcula la mediana de la variable mpg. Crea una nueva variable mpg01 que tome el valor 1 si el dato de mpg correspondiente está por encima de dicha mediana, y 0 si es menor o igual que ese valor. Crea una nueva tabla de datos para incluir la nueva variable, que además excluya el nombre del vehículo y la antigua variable mpg.
+
+## Calculo de la mediana de mpg
+
+**Calculamos la mediana** de la variable *mpg*. La variable *mpg* es el consumo de cada coche, en millas recorridas por galón de combustible.
+
+```{r}
+mediana_mpg <- median(mpg)
+```
+
+**Creamos la variable mpg01**, tomando el valor 1 para cuando el dato (mpg) sea mayor que la mediana de la variable mpg calculada anteriormente y 0 en caso contrario.
+
+```{r}
+mpg01 <- ifelse(mpg <= mediana_mpg,1,0)
+mpg01
+```
+
+## Creación de la nueva tabla (Auto2)
+
+Ahora **creamos una nueva tabla**. Esta tabla estará basada en la de *Auto* incluyendo la nueva variable (mpg01), creada anteriormente, y excluyendo el nombre del vehículo y la variable mpg.
+
+```{r warning=FALSE}
+set.seed(1);
+Auto2<-data.frame(cbind(Auto[-c(1,9)],mpg01))
+Auto2
+```
+
+# 2. Crea un modelo de regresión logística para predecir mpg01 en función del resto de variables de Auto2. Indica cuáles son las 4 variables que están más fuertemente asociadas con mpg01.
+
+## Regresión Logística
+
+**Creamos un modelo de regresión logística** con la función *glm().* Dicho modelo busca predicir mpg01 en función del resto de variables de Auto2.
+
+```{r}
+modelo.logit <- glm(mpg01 ~ ., data=Auto2,family=binomial)
+summary(modelo.logit)
+```
+
+```{r warning=FALSE}
+library(vcd)
+fp <- function(x) {
+  variables<-0
+  constante<-summary(modelo.logit)$coef[,"Estimate"][1]
+  for(i in 2:length(summary(modelo.logit)$coef[,"Estimate"])) {
+    variables<-summary(modelo.logit)$coef[,"Estimate"][i]*x
+  }
+  exp(constante+variables)/(1+exp(constante+variables))
+}
+summary(Auto2[1:7])
+```
+
+Calculamos la matriz/tabla de confusión.
+
+```{r}
+# Hacer predicciones con el modelo
+predicciones <- predict(modelo.logit, type="response") > 0.5
+predicciones <- ifelse(predicciones == TRUE, 1,0)
+
+# Crear la tabla de contingencia
+matriz.rl <- table(Auto2$mpg01, predicciones, dnn=c("predicciones",
+"observaciones"))
+
+#Tabla de confusión
+matriz.rl
+```
+
+Con la función `metricas()`obtenemos la proporción de error de este método, como otros resultados:
+
+```{r}
+metricas(matriz.rl)
+```
+
+Podemos graficar el resultado de matriz/tabla de confusión con la función `mosaic()`:
+
+```{r}
+mosaic(matriz.rl,shade=T,colorize=T,
+gp=gpar(fill=matrix(c("green","red","red","green"),2,2)))
+```
+
+## 4 variables que están más fuertemente asociadas con mpg01
+
+Usamos los valores de los coeficientes estandarizados (z-values) de cada variable que nos proporciona el modelo de regresión logística para indicar las 4 variables que están fuertemente asociadas a mpg01.
+
+Los coeficientes estandarizados (z-values) son una forma de comparar la fuerza de la asociación entre las variables independientes y la variable dependiente en un modelo estadístico. Cuanto mayor sea el valor absoluto del coeficiente estandarizado o z-value de una variable en un modelo de regresión logística, mayor será la fuerza de la asociación entre esa variable y la variable dependiente.
+
+```{r}
+set.seed(1)
+coeficientes_z <- summary(modelo.logit)$coef[, "z value"]
+coeficientes_z_ordenados <- sort(coeficientes_z, decreasing = TRUE)
+coeficientes_z_ordenados
+```
+
+Así podemos indicar las **4 variables que están fuertemente asociadas** a mpg01:
+
+```{r}
+nombres_variables <- row.names(summary(modelo.logit)$coef)
+variables_fuertemente_asociadas <- nombres_variables[which(coeficientes_z %in% coeficientes_z_ordenados[1:5])]
+
+variables_fuertemente_asociadas
+```
+
+# 3. Utiliza las 4 variables del apartado anterior para hacer análisis discriminante lineal. Calcula la matriz de confusión y la proporción de error que obtiene el método. Compara estos resultados con los del apartado anterior.
+
+## Análisis discriminante lineal
+
+Hacemos el análisis discriminante lineal usando las 4 variables que están fuertemente asociadas a mpg01 con la función qda():
+
+```{r warning=FALSE}
+library(MASS)
+set.seed(1);
+modelo.qda <- qda(mpg01 ~ cylinders+horsepower+weight+acceleration, data=Auto2, CV=TRUE)
+head(modelo.qda$class)
+```
+
+```{r}
+head(modelo.qda$posterior)
+```
+
+Calculamos la matriz/tabla de confusión.
+
+```{r}
+prediccion.qda<-modelo.qda$class
+matriz.qda<-table(Predichos=prediccion.qda,Verdaderos=mpg01)
+matriz.qda
+```
+
+Con la función `metricas()`obtenemos la proporción de error de este método, como otros resultados:
+
+```{r}
+m_qda <- metricas(matriz.qda)
+m_qda
+```
+
+Podemos graficar el resultado de matriz/tabla de confusión con la función `mosaic()`:
+
+```{r}
+mosaic(matriz.qda,shade=T,colorize=T,gp=gpar(fill=matrix(c("green","red","red","green"),2,2)))
+```
+
+## Comparación de este método con el anterior
+
+Dado que este método, análisis discriminante lineal, tiene un `Error global = 0.09693878` y el del método anterior, regresión logística, tiene un `Error global = 0.09183673`. Así que, el método de regresión logística obtiene mejores resultados.
+
+# 4. Utiliza las 4 variables del apartado 2 para hacer análisis discriminante cuadrático. Calcula la matriz de confusión y la proporción de error que obtiene el método. Compara los resultados obtenidos por este método con los obtenidos para los dos métodos anteriores.
+
+## Análisis discriminante cuadrático
+
+```{r}
+library(MASS)
+set.seed(1);
+modelo.qda <- qda(mpg01 ~ cylinders+horsepower+weight+acceleration, data = Auto2,CV=T)
+head(modelo.qda$class)
+```
+
+```{r}
+prediccion<-modelo.qda$class
+matriz.cuad<-table(Predichos=prediccion,Verdaderos=mpg01)
+
+matriz.cuad
+```
+
+```{r}
+metricas(matriz.cuad)
+```
+
+```{r}
+mosaic(matriz.cuad,shade=T,colorize=T,gp=gpar(fill=matrix(c("green","red","red","green"),2,2)))
+```
+
+Podemos concluir que sale los mismos resultados que con análisis discriminante lineal por lo que las variables tienen la misma matriz de covarianza en todos los grupos.
+
+## 5. Separa los datos seleccionando al azar 70 coches para predecir el grupo al que pertenecen y los 322 restantes como muestra de entrenamiento. Usa el método de los K vecinos más cercanos, con varios valores diferentes de K, para predecir mpg01 a partir de las 4 variables de los apartados anteriores. ¿Qué proporciones de error se obtienen? ¿Qué valor de K parece adecuado para este conjunto de datos? En general, ¿qué modelo escogerías para predecir mpg01?
+
+## KNN Vecinos más cercanos
+
+Seleccionamos al azar 70 coches para predecir y el restando como muestro de entranamiento.
+
+```{r}
+set.seed(1);
+clasificador<-mpg01
+indices <- sample(1:nrow(Auto2), 70)
+
+#Conjuntos de validacion y entrenamiento
+validacion<-Auto2[indices,]
+entrenamiento<-Auto2[-indices,]
+predictors <- c("cylinders", "horsepower", "weight", "acceleration")
+```
+
+Se entrena con **varios valores para K.**
+
+```{r}
+library(class)
+kmax=15
+errork <- c()
+for(i in 1:kmax){
+  x<-knn(train=entrenamiento[, predictors],test=validacion[, predictors],cl=clasificador[-indices],k=i)
+errork[i]<-metricas(table(Predichos=x,Verdaderos=clasificador[indices]))[4]
+
+}
+errork
+```
+
+Se **proporciona errores** muy cercanos unos a otros.
+
+Gracias a la seguiente gráfica podemos apreciar que con `K=3` da un **resultado óptimo**.
+
+```{r}
+plot(c(1:kmax),errork,type="l")
+
+```
+
+Los resultados obtenidos:
+
+```{r}
+x<-knn(train=entrenamiento[, predictors],test=validacion[, predictors],cl=entrenamiento$mpg01,k=3)
+matrizKNN<-table(x, validacion$mpg01)
+metricas(matrizKNN)
+```
+
+# Conclusión 
+
+El peor metodo para realizar la predicción es el de K-NN vecinos mas cercanos, aunque optimicemos el número de vecinos. El segundo peor metodo es análisis discriminante lineal ya que da los mismos resultados que análisis discriminante lineal y es mas complejo. Por lo cual regresión logística es el mejor método para predecir la variable mpg01 usando las variables más significativas del conjunto de datos :"*cylinders*", "*displacement*", "*year*", "*origin*". Aunque da mejores resultados comparandolo con todas las variables.
+
+```{r}
+library(dplyr)
+
+qda_metricas <- metricas(matriz.qda)[4]
+rl_metricas <- metricas(matriz.rl)[4]
+knn_metricas <- metricas(matrizKNN)[4]
+cuad_metricas <- metricas(matriz.cuad)[4]
+
+tabla_metricas <- data.frame(Métricas = c("Discriminante Lineal", "Regresión Logística", "Discriminante Cuadrático", "KNN V. Cercanos"),
+                             Valor_Error = c(qda_metricas, rl_metricas,cuad_metricas, knn_metricas))
+
+tabla_metricas_ <- tabla_metricas %>% arrange(desc(Valor_Error))
+tabla_metricas_
+```

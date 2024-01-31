@@ -1,0 +1,420 @@
+---
+title: 'Trabajo 2: Ténicas de aprendizaje supervisado.'
+author: "Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera"
+date: "2023-04-24"
+output:
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  html_document:
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    collapsed: yes
+    smooth_scroll: yes
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+# 1. El conjunto de datos OJ del paquete ISLR contiene información sobre 1070 compras de zumo de naranja realizada por distintos clientes, se anotó si el zumo de naranja era de la marca Citrus Hill o Minute Maid, además, se registró una serie de características (17) tanto del cliente como del producto.
+
+```{r}
+library(ISLR)
+data(OJ)
+attach(OJ)
+```
+
+| Variable       | Descripción                                                                                                                                                                                     |
+|------------------|------------------------------------------------------|
+| Purchase       | Marca de zumo comprada por el cliente. Los valores posibles son "CH" (Citrus Hill) y "MM" (Minute Maid).                                                                                        |
+| WeekofPurchase | Número de semana en que se realizó la compra. Los valores van del 237 al 282.                                                                                                                   |
+| StoreID        | Identificador de la tienda donde se realizó la compra. Los valores van del 2 al 137.                                                                                                            |
+| PriceCH        | Precio del zumo de naranja de Citrus Hill.                                                                                                                                                      |
+| PriceMM        | Precio del zumo de naranja de Minute Maid.                                                                                                                                                      |
+| DiscCH         | Descuento en el precio del zumo de naranja de Citrus Hill.                                                                                                                                      |
+| DiscMM         | Descuento en el precio del zumo de naranja de Minute Maid.                                                                                                                                      |
+| SpecialCH      | Indica si había una promoción especial en el zumo de naranja de Citrus Hill en la semana de la compra. Los valores posibles son 0 (no había promoción especial) y 1 (había promoción especial). |
+| SpecialMM      | Indica si había una promoción especial en el zumo de naranja de Minute Maid en la semana de la compra. Los valores posibles son 0 (no había promoción especial) y 1 (había promoción especial). |
+| LoyalCH        | Tasa de lealtad del cliente hacia la marca Citrus Hill.                                                                                                                                         |
+| SalePriceMM    | Precio del zumo de naranja de Minute Maid después del descuento.                                                                                                                                |
+| SalePriceCH    | Precio del zumo de naranja de Citrus Hill después del descuento.                                                                                                                                |
+| PriceDiff      | Diferencia en el precio de los dos tipos de zumo de naranja.                                                                                                                                    |
+| Store7         | Indica si la compra se realizó en la tienda número 7. Los valores posibles son 0 (no se realizó la compra en la tienda número 7) y 1 (se realizó la compra en la tienda número 7).              |
+| PctDiscMM      | Porcentaje de descuento en el precio del zumo de naranja de Minute Maid.                                                                                                                        |
+| PctDiscCH      | Porcentaje de descuento en el precio del zumo de naranja de Citrus Hill.                                                                                                                        |
+| ListPriceDiff  | Diferencia en el precio de lista de los dos tipos de zumo de naranja.                                                                                                                           |
+
+## a) Crea un conjunto de entrenamiento con 800 observaciones y reserva el resto como conjunto de validación. Recuerda establecer una semilla para que tu trabajo sea reproducible.
+
+```{r}
+set.seed(1)
+train_index <- sample(1:nrow(OJ), 800, replace = FALSE)
+
+train <- OJ[train_index,]
+valid <- OJ[-train_index,]
+```
+
+## b) Construye un árbol de clasificación que permita predecir la marca de zumo que comprará cada cliente del conjunto de entrenamiento. Haz una representación y utiliza la función summary() para obtener el error de clasificación sobre el conjunto de entrenamiento. ¿Cuántos nodos finales tiene?
+
+```{r}
+library(tree)
+set.seed(1)
+tree_oj <- tree(Purchase ~ ., data = train)
+```
+
+### Representación gráfica del árbol de clasificación
+
+Representamos al árbol de clásficación gráficamente. Al observar esta representación gráfica de la toma de decisiones acerca de la marca `MM` que sería la marca *Minute Maid* y `CH` que es *Citrus Hill*.
+
+```{r}
+plot(tree_oj)
+text(tree_oj)
+```
+
+### Error de clasificación sobre el conjunto de entrenamiento
+
+```{r}
+summary(tree_oj)
+```
+
+Al aplicar `summary()` sobre el árbol de clasificación anterior se puede observar las variables que están en la construcción del mismo. Tenemos el número de nodos terminales, la desviación residual media y la tasa de error de clásificación. Este arbol comete un error de 15.88%. Ha clasificado mal un total de 127 de 800.
+
+### ¿Cuántos nodos finales tiene?
+
+El árbol de clasificación tiene un total de 9 nodo finales/terminales.
+
+## c) Utiliza el árbol para predecir los datos de prueba. Obtén las principales métricas de evaluación para el conjunto de prueba.
+
+Al tener en cuenta el error del árbol, podemos estudiar como se comporta con el conjunto de pruebas, para realizar predicciones.
+
+```{r}
+tree_oj_pred <- predict(tree_oj, newdata=valid, type="class")
+```
+
+```{r}
+mean(tree_oj_pred != valid$Purchase)
+```
+
+```{r}
+metricas<-function(mc){ #mc es una matriz de confusión
+esp<-mc[1,1]/sum(mc[,1])
+sen<-mc[2,2]/sum(mc[,2])
+ag<-sum(diag(mc))/sum(mc)
+eg<-1-ag
+m<-cbind(esp,sen,ag,eg)
+colnames(m)=c("Especificidad","Sensibilidad","Exactitud","Error global")
+rownames(m)="valor"
+m
+}
+mc_tree_oj<-table(predichos=tree_oj_pred,verdaderos=valid$Purchase)
+metricas(mc_tree_oj)
+```
+
+## d) Utiliza la función cv.tree() para podar el árbol. ¿Cuántos nodos finales tiene el árbol podado? Construye el árbol podado, calcula el error de clasificación de este nuevo árbol sobre el conjunto de entrenamiento y sobre el conjunto de prueba. Compara los resultados con los del árbol sin podar.
+
+Utilizamos la función `cv.tree()` que encuentra el número de clasificaciones erróneas en función del parámetro de coste-complejidad (k).
+
+```{r}
+set.seed(1)
+tree_oj_cv <- cv.tree(tree_oj,FUN=prune.misclass)
+tree_oj_cv
+```
+
+```{r}
+tree_oj_podado <- prune.misclass(tree_oj,best=8)
+plot(tree_oj_podado)
+text(tree_oj_podado)
+```
+
+### ¿Cuántos nodos finales tiene el árbol podado?
+
+```{r}
+summary(tree_oj_podado)
+```
+
+Tiene un total de 8 nodos terminales.
+
+
+### Datos sobre el conjunto de entranamiento
+
+```{r}
+tree_oj_podado_pred_ent <- predict(tree_oj_podado, newdata=train, type="class")
+mc_podado_ent <- table(predichos=tree_oj_podado_pred_ent, verdaderos=train$Purchase)
+metricas(mc_podado_ent)
+```
+
+### Datos sobre el conjunto de validación
+
+```{r}
+tree_oj_podado_pred_val <- predict(tree_oj_podado, newdata=valid, type="class")
+mc_podado_val <- table(predichos=tree_oj_podado_pred_val, verdaderos=valid$Purchase)
+metricas(mc_podado_val)
+```
+
+### Comparación de los resultados
+
+Comparamos el error de clasificación de este nuevo arból sobre el conjunto de entranamiento, el conjunto de prueba y con los del arbol sin podar. Calcumalos los errores con el objetivo de compararlos:
+
+```{r}
+# Sin podar, sobre el conjunto de validación
+mc_tree_oj_val <-table(predichos=tree_oj_pred,verdaderos=valid$Purchase)
+tree_oj_val_error <- metricas(mc_tree_oj_val)[4]
+#Sin podar, sobre el conjunto de entranamiento
+mc_tree_oj_ent_error <-table(predichos=predict(tree_oj, newdata=train, type="class"),verdaderos=train$Purchase)
+tree_oj_ent_error <- metricas(mc_tree_oj_ent_error)[4]
+
+#Podados, sobre el conjunto de validación y entrenamiento, respectivamente.
+mc_podado_val_error <- metricas(mc_podado_val)[4]
+mc_podado_ent_error <- metricas(mc_podado_ent)[4]
+
+tabla_error <- data.frame(
+  'Tipo de error' = c('Error de clasificación en validación',
+                      'Error de clasificación en entrenamiento',
+                      'Error de clasificación en validación (podado)',
+                      'Error de clasificación en entrenamiento (podado)'),
+  'Valor' = c(tree_oj_val_error, tree_oj_ent_error, mc_podado_val_error, mc_podado_ent_error)
+)
+
+tabla_error
+```
+
+Comparando los resultados del árbol sin podar sobre el conjunto de entranamiento presenta un error de `0.15875` y el de validación `0.1703704`. En este caso, el error árbol de clasificación podado sobre el conjunto de entranamiento presenta un error de `0.1587500`, mientras que el error sobre el conjunto de validación es de `0.1703704`. Comparando los resultados sin podar y con poda, tenemos errores iguales uno para el otro. Así que en este caso, el elegimos el árbol con menor complejidad que es el árbol podado.
+
+## A la vista de la proporción de ventas de cada clase de zumo, ¿cómo valoras el comportamiento del árbol de clasificación? Intenta mejorar este comportamiento utilizando bosques aleatorios. ¿Qué tasa de error OOB obtienes? ¿Cuáles son las variables más importantes a la hora de determinar qué zumo va a comprar el consumidor?
+
+Al observar como se comporta este árbol de clasficación podemos estudiar primeramente que la proporción de ventas de cada marca de zumo para cada conjunto es:
+
+```{r}
+prop.table(table(OJ[train_index,]$Purchase)) #Entranamiento
+prop.table(table(OJ[-train_index,]$Purchase)) #Prueba
+```
+
+Podemos ver que no hay mucha diferencia entre las proporciones de venta de cada marca de jugo en los dos conjuntos. Esto sugiere que los conjuntos de entrenamiento y prueba se dividieron razonablemente bien al azar del conjunto de datos completo, y el modelo pudo clasificar con éxito ambas marcas de jugo en ambos conjuntos.
+
+Podemos **valorar** que el árbol tiene una buena especificidad, lo que se traduce en la capacidad de identificar correctamente la mayoría de los casos negativos. Como resultado, hay espacio para mejorar la capacidad del modelo para identificar con precisión los casos positivos. Sin embargo, la sensibilidad del modelo es bastante baja, lo que indica que hay un margen de mejora para identificar correctamente los casos positivos. La precisión del árbol es buena, pero no excelente. El árbol tiene margen de mejora para clasificar correctamente algunos casos, como lo muestra el valor de error global relativamente alto.
+
+```{r}
+metricas(mc_podado_val)
+```
+
+*Intentamos mejorarlo con utilizando bosques aleatorios.*
+
+## Bagging
+
+El objetivo principal de Bagging (Bootstrap Aggregating) es entrenar múltiples modelos utilizando varias muestras de entrenamiento que se obtienen al muestrear y reemplazar el conjunto de datos original.
+
+```{r warning=FALSE}
+set.seed(1)
+library(randomForest)
+oj_bag <- randomForest(Purchase ~ ., data=OJ, subset=train_index, ntree=500, mtry=18, importance = TRUE)
+oj_bag
+```
+
+Obtenemos una estimación **out-of-bag** (OOB) de 20.38%.
+
+Al ver la matriz de confusión se puede ver que comete menos error cuando clasifica como CH, siendo así más fiable para decir cuando se elige CH.
+
+Pintamos la salida anterior, así obtenemos el cómo se comporta el error a medida que aumentamos el número de árboles.
+
+```{r}
+plot(oj_bag)
+```
+
+
+Se observa un gran descenso del error hasta un poco después de los árboles 110 aproximadamente, cuando ultrapasa este punto se nota un pequeño aumento del error acompañados de puntos de constancia del error. Tenemos el error global (línea negra), el error de clasificar como CH (línea roja) y el error de clasifica como MM (línea negra).
+
+Tenemos un error de clasificación mayor que el del árbol podado. Antes teníamos con el árbol podado un error de 0.1703704.
+
+```{r}
+mc_bag <- oj_bag$confusion[,1:2]
+metricas(mc_bag)
+```
+
+Aún así podemos verificar que métricas obtenemos sobre el conjunto de validación:
+
+```{r}
+oj_bag_pred <- predict(oj_bag,newdata=OJ[-train_index,])
+mean(oj_bag_pred != OJ[-train_index,]$Purchase)
+```
+Obtenemos una matriz de confusión para este árbol.
+```{r}
+table(oj_bag_pred,OJ[-train_index,]$Purchase)
+```
+
+```{r}
+mc_bag_pred <- table(oj_bag_pred, OJ[-train_index,]$Purchase)
+metricas(mc_bag_pred)
+```
+
+Se confirma que no hubo una mejora en el error en ninguno de los dos conjuntos.
+
+## Bosques aleatorios 
+
+Utilizamos la recomendación de utilizar solo sqrt(p) variables predictoras.
+
+```{r}
+set.seed(1)
+
+popt <- trunc(sqrt(18))
+oj_rf <- randomForest(Purchase ~ ., data=OJ, subset=train_index, ntree=500, mtry=popt, importance=T)
+oj_rf
+```
+
+La estimación out-of-bag (OOB) se ha aumentado un poco, al 20.5%. Aún así podemos comprobar que métricas podemos tener con el conjunto de prueba:
+
+```{r}
+oj_rf_pred <- predict(oj_rf, newdata=OJ[-train_index,])
+mean(oj_rf_pred != OJ[-train_index,]$Purchase)
+```
+
+El error de clasificación se pone igual que al del árbol podado. Podemos ver las **variables más importantes**:
+
+```{r}
+importance(oj_rf)
+```
+
+```{r}
+x <- importance(oj_rf)[,4] / max(importance(oj_rf)[,4])
+sort(x)
+```
+
+Así que, las variables más importantes a la hora de comprar el zumo, son `LoyalCH, WeekofPurchase, StoreID,  PriceDiff, STORE, SalePriceMM y ListPriceDiff` .
+
+
+
+#2. Aplica los métodos de regresión logística, ADL y KNN a los datos del ejercicio anterior, con la misma muestra de entrenamiento y de test. Compara las matrices de confusión y los errores medios de clasificación de los tres métodos y decide con cuál te quedarías
+
+#En nuestro conjuntode datos OJ hay  una varibale cualitativa con la cual no podemos hacer los metodos de prediccion, por lo cual la quitamos
+```{r}
+library(ISLR)
+data(OJ)
+attach(OJ)
+
+OJ_new <- subset(OJ, select = -Store7)
+
+set.seed(1)
+
+# Regresión logística
+modelo.logit <- glm(Purchase ~ ., data=OJ_new,family=binomial)
+
+library(vcd)
+fp <- function(x) {
+  variables<-0
+  constante<-summary(modelo.logit)$coef[,"Estimate"][1]
+  for(i in 2:length(summary(modelo.logit)$coef[,"Estimate"])) {
+    variables<-summary(modelo.logit)$coef[,"Estimate"][i]*x
+  }
+  exp(constante+variables)/(1+exp(constante+variables))
+}
+
+# Hacer predicciones con el modelo
+predicciones <- predict(modelo.logit, type="response") > 0.5
+predicciones <- ifelse(predicciones == TRUE, 1,0)
+
+#Matriz de confusion
+matriz.rl <- table(OJ_new$Purchase, predicciones, dnn=c("predicciones",
+"observaciones"))
+metricas(matriz.rl)
+
+
+#Podemos graficar el resultado de matriz/tabla de confusión con la función `mosaic()`:
+mosaic(matriz.rl,shade=T,colorize=T,
+gp=gpar(fill=matrix(c("green","red","red","green"),2,2)))
+```
+
+
+# ADL
+```{r}
+#Primero comprobamos cuales son las variables mas fuertemente asociadas a Purchase
+modelo.logit <- glm(Purchase ~ ., data=OJ_new,family=binomial)
+set.seed(1)
+coeficientes_z <- summary(modelo.logit)$coef[, "z value"]
+coeficientes_z_ordenados <- sort(coeficientes_z, decreasing = TRUE)
+
+nombres_variables <- row.names(summary(modelo.logit)$coef)
+variables_fuertemente_asociadas <- nombres_variables[which(coeficientes_z %in% coeficientes_z_ordenados[1:10])]
+
+variables_fuertemente_asociadas
+
+#Usamos las 9 variables mas significativas para hacer el analisis discriminante lineal
+library(MASS)
+set.seed(1);
+modelo.qda <- qda(Purchase ~ PriceCH+PriceMM+DiscCH+DiscMM+SpecialCH+SpecialMM+PctDiscMM+PctDiscCH+STORE, data=OJ_new, CV=TRUE)
+head(modelo.qda$class)
+prediccion.qda<-modelo.qda$class
+matriz.qda<-table(Predichos=prediccion.qda,Verdaderos=Purchase)
+matriz.qda
+m_qda <- metricas(matriz.qda)
+m_qda
+
+#Podemos graficar el resultado de matriz/tabla de confusión con la función `mosaic()`:
+mosaic(matriz.qda,shade=T,colorize=T,gp=gpar(fill=matrix(c("green","red","red","green"),2,2)))
+```
+
+
+
+# KNN
+```{r}
+
+set.seed(1)
+indices <- sample(1:nrow(OJ_new), 800, replace = FALSE)
+
+validacion <- OJ_new[indices,]
+entrenamiento <- OJ_new[-indices,]
+clasificador<-Purchase
+
+library(class)
+kmax=15
+errork <- c()
+for(i in 1:kmax){
+  x<-knn(train=entrenamiento[, -1],test=validacion[, -1],cl=clasificador[-indices],k=i)
+errork[i]<-metricas(table(Predichos=x,Verdaderos=clasificador[indices]))[4]
+
+}
+#Dibujamos los valores para saber cual es el valor de k optimo 
+plot(c(1:kmax),errork,type="l")
+
+#Ahora probamos usando solo las 9 variables mas significativas
+predictors <- c("PriceCH", "PriceMM", "DiscCH", "DiscMM","SpecialCH", "SpecialMM", "PctDiscMM", "PctDiscCH","STORE")
+errork_new <- c()
+for(i in 1:kmax){
+  x<-knn(train=entrenamiento[, predictors],test=validacion[, predictors],cl=clasificador[-indices],k=i)
+errork_new[i]<-metricas(table(Predichos=x,Verdaderos=clasificador[indices]))[4]
+}
+plot(c(1:kmax),errork_new,type="l")
+
+#Mejora significativamente usando las 9 variables , por lo cual utilizaremos estas 9 variables y un k=8
+
+  x<-knn(train=entrenamiento[, predictors],test=validacion[, predictors],cl=clasificador[-indices],k=8)
+matrizKNN<-table(x, validacion$Purchase)
+metricas(matrizKNN)
+
+```
+
+
+#Conclusion  ordenamos los errores obtenidos de los distintos metodos de prediccion
+```{r}
+
+library(dplyr)
+
+adl_metricas <- metricas(matriz.qda)[4]
+rl_metricas <- metricas(matriz.rl)[4]
+knn_metricas <- metricas(matrizKNN)[4]
+
+tabla_metricas <- data.frame(Métricas = c("Discriminante Lineal", "Regresión Logística", "KNN V. Cercanos"),
+                             Valor_Error = c(adl_metricas, rl_metricas, knn_metricas))
+
+tabla_metricas_ <- tabla_metricas %>% arrange(desc(Valor_Error))
+tabla_metricas_
+
+#Segun los datos obtenidos el mejor metodo para realizar la prediccion el de regresión logística disminuyendo el error hasta la mitad del valor de los otros errores obtenidos 
+
+```
+
+
+

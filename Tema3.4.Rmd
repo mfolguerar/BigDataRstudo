@@ -1,0 +1,175 @@
+---
+title: "Untitled"
+author: "mfolguer"
+date: "2023-04-11"
+output: word_document
+---
+
+
+```{r}
+spam<-read.table("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/spam.data",header=FALSE)
+spam$V58<-as.factor(spam$V58)
+levels(spam$V58)<-c("No","Si")
+#install.packages("tree")
+library("tree")
+
+#funcion ya utilizada
+ metricas<-function(matriz_confusion){
+    especifidad<-matriz_confusion[1,1]/sum(matriz_confusion[,1])
+    sensibilidad<-matriz_confusion[2,2]/sum(matriz_confusion[,2])
+    acierto_global<-sum(diag(matriz_confusion))/sum(matriz_confusion)
+    eg<-1-acierto_global
+    #creamos una tabla con todos los valores
+    m<-cbind(especifidad,sensibilidad,acierto_global,eg)
+    colnames(m)=c("Especifidad","Sensibilidad","Exactitud","Error Global")
+    rownames(m)="valor"
+    m
+  }
+
+spam.tree<-tree(V58~.,data=spam)
+
+summary(spam.tree)
+plot(spam.tree)
+text(spam.tree)
+
+
+test_index<-read.table("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/spam.traintest",header=FALSE)
+test<-which(test_index$V1==1)
+
+spam.tree<-tree(V58~.,data=spam[-test,])
+spam.tree.pred<-predict(spam.tree,newdata=spam[test,],type="class")
+spam.tree.pred
+spam.tree.pred
+mean(spam.tree.pred!=spam$V58[test])
+mconfusion<-table(predichos=spam.tree.pred,verdaderos=spam$V58[test])
+metricas(mconfusion)
+
+set.seed(1)
+spam.cv<-cv.tree(spam.tree,FUN=prune.misclass)
+spam.cv
+spam.podado<-prune.misclass(spam.tree,best=9)
+plot(spam.podado)
+text(spam.podado)
+
+spam.podado.pred<-predict(spam.podado,newdata=spam[test,],type="class")
+mc_podado<-table(predichos=spam.podado.pred,verdaderos=spam$V58[test])
+metricas(mc_podado)
+
+library(rpart)
+library(rpart.plot)
+
+arbol<-rpart(formula=V58~.,data=spam[-test,])
+rpart.plot(arbol)
+pred1<-predict(arbol,newdata=spam[test,],type="class")
+
+
+ mc_p1<-table(predichos=pred1,verdaderos=spam$V58[test])
+```
+
+```{r}
+train<-(1:nrow(spam))[-test]
+#install.packages("randomForest")
+library(randomForest)
+#usar la variable 58 apoyandose en las demas 
+spam.bag<-randomForest(V58~.,data=spam,subset=train,ntree=500,mtry=57,importance=T)
+spam.bag
+#matriz de confusion y error de clasificacion
+spam.bag$confusion
+#matriz de confusion solo
+mc<-spam.bag$confusion[,1:2]
+metricas(mc)
+#En verde para cuando clasificamos como spam y no es ,Negra error global,roja clasificamos como no spam y si es spam
+plot(spam.bag)
+#podemos apreciarque con 50 arboles desciende significativamente
+
+spam.bag.pred<-predict(spam.bag,newdata=spam[test,])
+#predicion error 5.02 con todas las variables
+mean(spam.bag.pred!=spam[test,58])
+mc.bag.pred<-table(spam.bag.pred,spam[test,58])
+metricas(mc.bag.pred)
+
+varImpPlot(spam.bag)
+#bosque aleatorio con 7variables 
+noptimo<-trunc(sqrt(57))
+spam.rf<-randomForest(V58~.,data=spam,subset=train,ntree=500,mtry=noptimo,importance=T)
+spam.rf
+#oob es el error de entrenamiento
+spam.rf.pred<-predict(spam.rf,newdata = spam[test,])
+mean(spam.rf.pred!=spam[test,58])
+#consegimosreducir el error de un 5.02 a 4.8  por lo que con 7 variables
+#para saber la importancia de cada variable
+importance(spam.rf)
+#para usar los predictores con mas importancia
+x<-importance(spam.rf)[,4]/max(importance(spam.rf)[,4])
+sort(x)
+
+
+#install.packages("adabag")
+#install.packages("ggplot2")
+#install.packages("rlang")
+library(rlang)
+library(ggplot2)
+library(caret)
+library(adabag)
+set.seed(1)
+spam.boost<-boosting(V58~.,data=spam[train,],mfianl=50)
+
+spam.boost.pred$error
+spam.boost.pred$confusion
+matricas(spam.boost.pred$confusion)
+
+install.packages("C50")
+library(C50)
+set.seed(1)
+#100 iteracciones de boosting
+spam.C50<-C5.0(x=spam[train,-58],y=spam[train,58],trials=100)
+spam.C50.pred<-predict(spam.C50.pred,spam[test,-58])
+
+table(spam.C50.pred,spam[test])
+#preguntar
+
+```
+
+#Dendogramas
+```{r}
+data("USArrests")
+datos<-USArrests
+set.seed(1)
+muestra<-sample(1:50,20,replace=F)
+x<-datos[muestra,]
+distancias<-dist(x)
+d_completo<-hclust(d=distancias,method="complete")
+d_medio<-hclust(d=distancias,method="average")
+d_unico<-hclust(d=distancias,method="single")
+plot(d_completo,main="Dendograma completo")
+rect.hclust(d_completo,k=3)
+grupos_completo<-cutree(d_completo,k=3)
+plot(x,col=5-grupos_completo,main="Enlace completo")
+xs<-apply(x,2,scale)
+rownames(xs)=rownames(x)
+dist_s<-dist(xs)
+d_completo_s<-hclust(dist_s,method = "complete")
+plot(d_completo_s,main="Dendograma completo escalado")
+
+```
+```{r}
+set.seed(1)
+res.km<-kmeans(x,centers=2,nstart = 20)
+res.km
+res.km$tot.withinss
+
+res.km3<-kmeans(x,centers=3,nstart = 20)
+res.km3$tot.withinss
+
+res.km3b<-kmeans(x,centers=3,nstart = 1)
+
+#para saber cual es el valor optimo  
+Wtot<-c()
+for(k in 1 :10){
+  Wtot[k]<-kmeans(x,centers=k,nstart = 20)$tot.withinss
+  
+}
+plot(x=c(1:10),y=Wtot)
+#nos quedariamos con el valor 4 o 5 
+
+```

@@ -1,0 +1,111 @@
+---
+title: "Practica1"
+author: "mfolguer"
+date: "2023-02-19"
+output: word_document
+---
+#1. Estudiar el modelo de regresión simple de la variable medv sobre lstat (el porcentaje de propietarios con bajo estatus socioeconómico).
+```{r}
+library(MASS)
+attach(Boston)
+modelo<-lm(medv~lstat)
+summary(modelo)
+
+library(ggplot2)
+grafico1<-ggplot(Boston,aes(lstat,medv))+
+geom_point(colour="green")+
+geom_smooth(method="lm",se=F,colour="red")+
+theme_bw()
+plot(grafico1)
+
+
+```
+#2. ¿Cuál es la recta de regresión para este modelo? ¿Qué coeficiente de 𝑅2 se alcanza con este modelo?
+```{r}
+x1=cov(medv,lstat)/var(lstat)
+x2=mean(medv)-x1*mean(lstat)
+#Recta de regresion=x1*lstat+x2   ->-0.95*lstat+34.55
+
+#Precision del modelo
+library(stats)
+modelo<-lm(medv~lstat)
+n=length(lstat)
+SCT=sum((medv-mean(medv))^2)
+SCR=sum(residuals(modelo)^2)
+R2=(SCT-SCR)/SCT
+#El R^2 es 0,54
+R2
+
+```
+#3. Supongamos que tenemos una vivienda en una nueva zona con un estatus socioeconómico (lstat) de 23.4, según el modelo de regresión simple ajustado, ¿qué predicción se obtiene para la mediana del valor de una vivienda en esta zona?
+```{r}
+library(stats)
+modelo<-lm(medv~lstat)
+prediccion <- predict(modelo, newdata = nuevo_lstat)
+
+
+```
+
+#4 forma correcta
+```{r}
+modelo<-lm(medv~age+black+chas+crim+dis+indus+lstat+nox+ptratio+rad+rm+tax+zn)
+summary(modelo)
+#age chas crim  indus  tax tienen el p valor mas alto las elimino
+
+
+modelo<-lm(medv~black+dis+lstat+nox+ptratio+rad+rm+zn)
+summary(modelo)
+#elimino rad y zn
+modelo<-lm(medv~black+dis+lstat+nox+ptratio+rm)
+summary(modelo)
+#elimino black
+modelo<-lm(medv~dis+lstat+nox+ptratio+rm)
+summary(modelo)
+
+```
+
+#5. ¿Se aprecia una gran diferencia entre el ajuste producido por el modelo que incluye todas las variables regresoras y el modelo de regresión que cuenta con las 5 variables más importantes? Justifica la respuesta.
+```{r}
+library(MASS)
+attach(Boston)
+library(psych)
+pairs(medv~dis+lstat+nox+ptratio+rm,main="Matriz de dispersion mejorada")
+pairs(medv~age+black+chas+crim+dis+indus+nox+ptratio+rad+rm+tax+zn,main="Matriz de dispersión sin mejora")
+#se nota una clara mejora en los valores que toman los ejes y en el pvalor de cada variable
+
+
+
+library(MASS)
+attach(Boston)
+modelo <- lm(medv ~ ., data = Boston)
+summary(modelo)
+#R² de 0.741
+modelo1 <- lm(medv ~ rm + ptratio + black + lstat + tax, data = Boston)
+summary(modelo1)
+#R² de 0.716
+#la diferencia entre los R² no es significativa
+#Pero el modelo que tiene todas las variables tiene un mejor ajuste y es mas preciso
+#Entonces se aprecia diferencia pero es mas ajustado usar todas las variables
+
+
+```
+#6. Basándote en el modelo de regresión que incluye 5 variables: Estudia si se verifican las hipótesis del modelo. #¿Consideras que es un modelo apropiado para predecir los valores medianos de la vivienda en Boston? Justifica tu respuesta.
+```{r}
+library(MASS)
+attach(Boston)
+modelo1 <- lm(medv ~ rm + ptratio + black + lstat + tax)
+res<-residuals(modelo1)
+shapiro.test(res)
+#Como Pvalor es < que alfa =aceptamos hipótesis alternativa H1
+#el modelo no es consistente
+
+t.test(res)
+#como el 0 esta dentro del intervalo aceptamos que la media de los errores es 0 se cumple H0 y como el p valor esta grande rechazamos H1
+
+#Residuos homocedasticos
+bptest(modelo1,data=Boston)
+
+#independencia del modelo
+dwtest(modelo1,data=Boston)
+```
+

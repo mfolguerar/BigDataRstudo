@@ -1,0 +1,1049 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Trabajo 2: Ténicas de aprendizaje supervisado.},
+  pdfauthor={Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Trabajo 2: Ténicas de aprendizaje supervisado.}
+\author{Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera}
+\date{2023-04-24}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\hypertarget{el-conjunto-de-datos-oj-del-paquete-islr-contiene-informaciuxf3n-sobre-1070-compras-de-zumo-de-naranja-realizada-por-distintos-clientes-se-anotuxf3-si-el-zumo-de-naranja-era-de-la-marca-citrus-hill-o-minute-maid-ademuxe1s-se-registruxf3-una-serie-de-caracteruxedsticas-17-tanto-del-cliente-como-del-producto.}{%
+\section{1. El conjunto de datos OJ del paquete ISLR contiene
+información sobre 1070 compras de zumo de naranja realizada por
+distintos clientes, se anotó si el zumo de naranja era de la marca
+Citrus Hill o Minute Maid, además, se registró una serie de
+características (17) tanto del cliente como del
+producto.}\label{el-conjunto-de-datos-oj-del-paquete-islr-contiene-informaciuxf3n-sobre-1070-compras-de-zumo-de-naranja-realizada-por-distintos-clientes-se-anotuxf3-si-el-zumo-de-naranja-era-de-la-marca-citrus-hill-o-minute-maid-ademuxe1s-se-registruxf3-una-serie-de-caracteruxedsticas-17-tanto-del-cliente-como-del-producto.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ISLR)}
+\FunctionTok{data}\NormalTok{(OJ)}
+\FunctionTok{attach}\NormalTok{(OJ)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7500}}@{}}
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Descripción
+\end{minipage} \\
+\midrule()
+\endhead
+Purchase & Marca de zumo comprada por el cliente. Los valores posibles
+son ``CH'' (Citrus Hill) y ``MM'' (Minute Maid). \\
+WeekofPurchase & Número de semana en que se realizó la compra. Los
+valores van del 237 al 282. \\
+StoreID & Identificador de la tienda donde se realizó la compra. Los
+valores van del 2 al 137. \\
+PriceCH & Precio del zumo de naranja de Citrus Hill. \\
+PriceMM & Precio del zumo de naranja de Minute Maid. \\
+DiscCH & Descuento en el precio del zumo de naranja de Citrus Hill. \\
+DiscMM & Descuento en el precio del zumo de naranja de Minute Maid. \\
+SpecialCH & Indica si había una promoción especial en el zumo de naranja
+de Citrus Hill en la semana de la compra. Los valores posibles son 0 (no
+había promoción especial) y 1 (había promoción especial). \\
+SpecialMM & Indica si había una promoción especial en el zumo de naranja
+de Minute Maid en la semana de la compra. Los valores posibles son 0 (no
+había promoción especial) y 1 (había promoción especial). \\
+LoyalCH & Tasa de lealtad del cliente hacia la marca Citrus Hill. \\
+SalePriceMM & Precio del zumo de naranja de Minute Maid después del
+descuento. \\
+SalePriceCH & Precio del zumo de naranja de Citrus Hill después del
+descuento. \\
+PriceDiff & Diferencia en el precio de los dos tipos de zumo de
+naranja. \\
+Store7 & Indica si la compra se realizó en la tienda número 7. Los
+valores posibles son 0 (no se realizó la compra en la tienda número 7) y
+1 (se realizó la compra en la tienda número 7). \\
+PctDiscMM & Porcentaje de descuento en el precio del zumo de naranja de
+Minute Maid. \\
+PctDiscCH & Porcentaje de descuento en el precio del zumo de naranja de
+Citrus Hill. \\
+ListPriceDiff & Diferencia en el precio de lista de los dos tipos de
+zumo de naranja. \\
+\bottomrule()
+\end{longtable}
+
+\hypertarget{a-crea-un-conjunto-de-entrenamiento-con-800-observaciones-y-reserva-el-resto-como-conjunto-de-validaciuxf3n.-recuerda-establecer-una-semilla-para-que-tu-trabajo-sea-reproducible.}{%
+\subsection{a) Crea un conjunto de entrenamiento con 800 observaciones y
+reserva el resto como conjunto de validación. Recuerda establecer una
+semilla para que tu trabajo sea
+reproducible.}\label{a-crea-un-conjunto-de-entrenamiento-con-800-observaciones-y-reserva-el-resto-como-conjunto-de-validaciuxf3n.-recuerda-establecer-una-semilla-para-que-tu-trabajo-sea-reproducible.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{train\_index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(OJ), }\DecValTok{800}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{FALSE}\NormalTok{)}
+
+\NormalTok{train }\OtherTok{\textless{}{-}}\NormalTok{ OJ[train\_index,]}
+\NormalTok{valid }\OtherTok{\textless{}{-}}\NormalTok{ OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{b-construye-un-uxe1rbol-de-clasificaciuxf3n-que-permita-predecir-la-marca-de-zumo-que-compraruxe1-cada-cliente-del-conjunto-de-entrenamiento.-haz-una-representaciuxf3n-y-utiliza-la-funciuxf3n-summary-para-obtener-el-error-de-clasificaciuxf3n-sobre-el-conjunto-de-entrenamiento.-cuuxe1ntos-nodos-finales-tiene}{%
+\subsection{b) Construye un árbol de clasificación que permita predecir
+la marca de zumo que comprará cada cliente del conjunto de
+entrenamiento. Haz una representación y utiliza la función summary()
+para obtener el error de clasificación sobre el conjunto de
+entrenamiento. ¿Cuántos nodos finales
+tiene?}\label{b-construye-un-uxe1rbol-de-clasificaciuxf3n-que-permita-predecir-la-marca-de-zumo-que-compraruxe1-cada-cliente-del-conjunto-de-entrenamiento.-haz-una-representaciuxf3n-y-utiliza-la-funciuxf3n-summary-para-obtener-el-error-de-clasificaciuxf3n-sobre-el-conjunto-de-entrenamiento.-cuuxe1ntos-nodos-finales-tiene}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tree)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{tree\_oj }\OtherTok{\textless{}{-}} \FunctionTok{tree}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{representaciuxf3n-gruxe1fica-del-uxe1rbol-de-clasificaciuxf3n}{%
+\subsubsection{Representación gráfica del árbol de
+clasificación}\label{representaciuxf3n-gruxe1fica-del-uxe1rbol-de-clasificaciuxf3n}}
+
+Representamos al árbol de clásficación gráficamente. Al observar esta
+representación gráfica de la toma de decisiones acerca de la marca
+\texttt{MM} que sería la marca \emph{Minute Maid} y \texttt{CH} que es
+\emph{Citrus Hill}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(tree\_oj)}
+\FunctionTok{text}\NormalTok{(tree\_oj)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\hypertarget{error-de-clasificaciuxf3n-sobre-el-conjunto-de-entrenamiento}{%
+\subsubsection{Error de clasificación sobre el conjunto de
+entrenamiento}\label{error-de-clasificaciuxf3n-sobre-el-conjunto-de-entrenamiento}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(tree\_oj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Classification tree:
+## tree(formula = Purchase ~ ., data = train)
+## Variables actually used in tree construction:
+## [1] "LoyalCH"       "PriceDiff"     "SpecialCH"     "ListPriceDiff"
+## [5] "PctDiscMM"    
+## Number of terminal nodes:  9 
+## Residual mean deviance:  0.7432 = 587.8 / 791 
+## Misclassification error rate: 0.1588 = 127 / 800
+\end{verbatim}
+
+Al aplicar \texttt{summary()} sobre el árbol de clasificación anterior
+se puede observar las variables que están en la construcción del mismo.
+Tenemos el número de nodos terminales, la desviación residual media y la
+tasa de error de clásificación. Este arbol comete un error de 15.88\%.
+Ha clasificado mal un total de 127 de 800.
+
+\hypertarget{cuuxe1ntos-nodos-finales-tiene}{%
+\subsubsection{¿Cuántos nodos finales
+tiene?}\label{cuuxe1ntos-nodos-finales-tiene}}
+
+El árbol de clasificación tiene un total de 9 nodo finales/terminales.
+
+\hypertarget{c-utiliza-el-uxe1rbol-para-predecir-los-datos-de-prueba.-obtuxe9n-las-principales-muxe9tricas-de-evaluaciuxf3n-para-el-conjunto-de-prueba.}{%
+\subsection{c) Utiliza el árbol para predecir los datos de prueba. Obtén
+las principales métricas de evaluación para el conjunto de
+prueba.}\label{c-utiliza-el-uxe1rbol-para-predecir-los-datos-de-prueba.-obtuxe9n-las-principales-muxe9tricas-de-evaluaciuxf3n-para-el-conjunto-de-prueba.}}
+
+Al tener en cuenta el error del árbol, podemos estudiar como se comporta
+con el conjunto de pruebas, para realizar predicciones.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tree\_oj\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_oj, }\AttributeTok{newdata=}\NormalTok{valid, }\AttributeTok{type=}\StringTok{"class"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mean}\NormalTok{(tree\_oj\_pred }\SpecialCharTok{!=}\NormalTok{ valid}\SpecialCharTok{$}\NormalTok{Purchase)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1703704
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{metricas}\OtherTok{\textless{}{-}}\ControlFlowTok{function}\NormalTok{(mc)\{ }\CommentTok{\#mc es una matriz de confusión}
+\NormalTok{esp}\OtherTok{\textless{}{-}}\NormalTok{mc[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(mc[,}\DecValTok{1}\NormalTok{])}
+\NormalTok{sen}\OtherTok{\textless{}{-}}\NormalTok{mc[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{]}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(mc[,}\DecValTok{2}\NormalTok{])}
+\NormalTok{ag}\OtherTok{\textless{}{-}}\FunctionTok{sum}\NormalTok{(}\FunctionTok{diag}\NormalTok{(mc))}\SpecialCharTok{/}\FunctionTok{sum}\NormalTok{(mc)}
+\NormalTok{eg}\OtherTok{\textless{}{-}}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{ag}
+\NormalTok{m}\OtherTok{\textless{}{-}}\FunctionTok{cbind}\NormalTok{(esp,sen,ag,eg)}
+\FunctionTok{colnames}\NormalTok{(m)}\OtherTok{=}\FunctionTok{c}\NormalTok{(}\StringTok{"Especificidad"}\NormalTok{,}\StringTok{"Sensibilidad"}\NormalTok{,}\StringTok{"Exactitud"}\NormalTok{,}\StringTok{"Error global"}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(m)}\OtherTok{=}\StringTok{"valor"}
+\NormalTok{m}
+\NormalTok{\}}
+\NormalTok{mc\_tree\_oj}\OtherTok{\textless{}{-}}\FunctionTok{table}\NormalTok{(}\AttributeTok{predichos=}\NormalTok{tree\_oj\_pred,}\AttributeTok{verdaderos=}\NormalTok{valid}\SpecialCharTok{$}\NormalTok{Purchase)}
+\FunctionTok{metricas}\NormalTok{(mc\_tree\_oj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor      0.952381     0.627451 0.8296296    0.1703704
+\end{verbatim}
+
+\hypertarget{d-utiliza-la-funciuxf3n-cv.tree-para-podar-el-uxe1rbol.-cuuxe1ntos-nodos-finales-tiene-el-uxe1rbol-podado-construye-el-uxe1rbol-podado-calcula-el-error-de-clasificaciuxf3n-de-este-nuevo-uxe1rbol-sobre-el-conjunto-de-entrenamiento-y-sobre-el-conjunto-de-prueba.-compara-los-resultados-con-los-del-uxe1rbol-sin-podar.}{%
+\subsection{d) Utiliza la función cv.tree() para podar el árbol.
+¿Cuántos nodos finales tiene el árbol podado? Construye el árbol podado,
+calcula el error de clasificación de este nuevo árbol sobre el conjunto
+de entrenamiento y sobre el conjunto de prueba. Compara los resultados
+con los del árbol sin
+podar.}\label{d-utiliza-la-funciuxf3n-cv.tree-para-podar-el-uxe1rbol.-cuuxe1ntos-nodos-finales-tiene-el-uxe1rbol-podado-construye-el-uxe1rbol-podado-calcula-el-error-de-clasificaciuxf3n-de-este-nuevo-uxe1rbol-sobre-el-conjunto-de-entrenamiento-y-sobre-el-conjunto-de-prueba.-compara-los-resultados-con-los-del-uxe1rbol-sin-podar.}}
+
+Utilizamos la función \texttt{cv.tree()} que encuentra el número de
+clasificaciones erróneas en función del parámetro de coste-complejidad
+(k).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{tree\_oj\_cv }\OtherTok{\textless{}{-}} \FunctionTok{cv.tree}\NormalTok{(tree\_oj,}\AttributeTok{FUN=}\NormalTok{prune.misclass)}
+\NormalTok{tree\_oj\_cv}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $size
+## [1] 9 8 7 4 2 1
+## 
+## $dev
+## [1] 145 145 146 146 167 315
+## 
+## $k
+## [1]       -Inf   0.000000   3.000000   4.333333  10.500000 151.000000
+## 
+## $method
+## [1] "misclass"
+## 
+## attr(,"class")
+## [1] "prune"         "tree.sequence"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tree\_oj\_podado }\OtherTok{\textless{}{-}} \FunctionTok{prune.misclass}\NormalTok{(tree\_oj,}\AttributeTok{best=}\DecValTok{8}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(tree\_oj\_podado)}
+\FunctionTok{text}\NormalTok{(tree\_oj\_podado)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\hypertarget{cuuxe1ntos-nodos-finales-tiene-el-uxe1rbol-podado}{%
+\subsubsection{¿Cuántos nodos finales tiene el árbol
+podado?}\label{cuuxe1ntos-nodos-finales-tiene-el-uxe1rbol-podado}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(tree\_oj\_podado)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Classification tree:
+## snip.tree(tree = tree_oj, nodes = 4L)
+## Variables actually used in tree construction:
+## [1] "LoyalCH"       "PriceDiff"     "SpecialCH"     "ListPriceDiff"
+## [5] "PctDiscMM"    
+## Number of terminal nodes:  8 
+## Residual mean deviance:  0.7598 = 601.8 / 792 
+## Misclassification error rate: 0.1588 = 127 / 800
+\end{verbatim}
+
+Tiene un total de 8 nodos terminales.
+
+\hypertarget{datos-sobre-el-conjunto-de-entranamiento}{%
+\subsubsection{Datos sobre el conjunto de
+entranamiento}\label{datos-sobre-el-conjunto-de-entranamiento}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tree\_oj\_podado\_pred\_ent }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_oj\_podado, }\AttributeTok{newdata=}\NormalTok{train, }\AttributeTok{type=}\StringTok{"class"}\NormalTok{)}
+\NormalTok{mc\_podado\_ent }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{predichos=}\NormalTok{tree\_oj\_podado\_pred\_ent, }\AttributeTok{verdaderos=}\NormalTok{train}\SpecialCharTok{$}\NormalTok{Purchase)}
+\FunctionTok{metricas}\NormalTok{(mc\_podado\_ent)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.9278351    0.7079365   0.84125      0.15875
+\end{verbatim}
+
+\hypertarget{datos-sobre-el-conjunto-de-validaciuxf3n}{%
+\subsubsection{Datos sobre el conjunto de
+validación}\label{datos-sobre-el-conjunto-de-validaciuxf3n}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tree\_oj\_podado\_pred\_val }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(tree\_oj\_podado, }\AttributeTok{newdata=}\NormalTok{valid, }\AttributeTok{type=}\StringTok{"class"}\NormalTok{)}
+\NormalTok{mc\_podado\_val }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(}\AttributeTok{predichos=}\NormalTok{tree\_oj\_podado\_pred\_val, }\AttributeTok{verdaderos=}\NormalTok{valid}\SpecialCharTok{$}\NormalTok{Purchase)}
+\FunctionTok{metricas}\NormalTok{(mc\_podado\_val)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor      0.952381     0.627451 0.8296296    0.1703704
+\end{verbatim}
+
+\hypertarget{comparaciuxf3n-de-los-resultados}{%
+\subsubsection{Comparación de los
+resultados}\label{comparaciuxf3n-de-los-resultados}}
+
+Comparamos el error de clasificación de este nuevo arból sobre el
+conjunto de entranamiento, el conjunto de prueba y con los del arbol sin
+podar. Calcumalos los errores con el objetivo de compararlos:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Sin podar, sobre el conjunto de validación}
+\NormalTok{mc\_tree\_oj\_val }\OtherTok{\textless{}{-}}\FunctionTok{table}\NormalTok{(}\AttributeTok{predichos=}\NormalTok{tree\_oj\_pred,}\AttributeTok{verdaderos=}\NormalTok{valid}\SpecialCharTok{$}\NormalTok{Purchase)}
+\NormalTok{tree\_oj\_val\_error }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(mc\_tree\_oj\_val)[}\DecValTok{4}\NormalTok{]}
+\CommentTok{\#Sin podar, sobre el conjunto de entranamiento}
+\NormalTok{mc\_tree\_oj\_ent\_error }\OtherTok{\textless{}{-}}\FunctionTok{table}\NormalTok{(}\AttributeTok{predichos=}\FunctionTok{predict}\NormalTok{(tree\_oj, }\AttributeTok{newdata=}\NormalTok{train, }\AttributeTok{type=}\StringTok{"class"}\NormalTok{),}\AttributeTok{verdaderos=}\NormalTok{train}\SpecialCharTok{$}\NormalTok{Purchase)}
+\NormalTok{tree\_oj\_ent\_error }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(mc\_tree\_oj\_ent\_error)[}\DecValTok{4}\NormalTok{]}
+
+\CommentTok{\#Podados, sobre el conjunto de validación y entrenamiento, respectivamente.}
+\NormalTok{mc\_podado\_val\_error }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(mc\_podado\_val)[}\DecValTok{4}\NormalTok{]}
+\NormalTok{mc\_podado\_ent\_error }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(mc\_podado\_ent)[}\DecValTok{4}\NormalTok{]}
+
+\NormalTok{tabla\_error }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \StringTok{\textquotesingle{}Tipo de error\textquotesingle{}} \OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Error de clasificación en validación\textquotesingle{}}\NormalTok{,}
+                      \StringTok{\textquotesingle{}Error de clasificación en entrenamiento\textquotesingle{}}\NormalTok{,}
+                      \StringTok{\textquotesingle{}Error de clasificación en validación (podado)\textquotesingle{}}\NormalTok{,}
+                      \StringTok{\textquotesingle{}Error de clasificación en entrenamiento (podado)\textquotesingle{}}\NormalTok{),}
+  \StringTok{\textquotesingle{}Valor\textquotesingle{}} \OtherTok{=} \FunctionTok{c}\NormalTok{(tree\_oj\_val\_error, tree\_oj\_ent\_error, mc\_podado\_val\_error, mc\_podado\_ent\_error)}
+\NormalTok{)}
+
+\NormalTok{tabla\_error}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                      Tipo.de.error     Valor
+## 1             Error de clasificación en validación 0.1703704
+## 2          Error de clasificación en entrenamiento 0.1587500
+## 3    Error de clasificación en validación (podado) 0.1703704
+## 4 Error de clasificación en entrenamiento (podado) 0.1587500
+\end{verbatim}
+
+Comparando los resultados del árbol sin podar sobre el conjunto de
+entranamiento presenta un error de \texttt{0.15875} y el de validación
+\texttt{0.1703704}. En este caso, el error árbol de clasificación podado
+sobre el conjunto de entranamiento presenta un error de
+\texttt{0.1587500}, mientras que el error sobre el conjunto de
+validación es de \texttt{0.1703704}. Comparando los resultados sin podar
+y con poda, tenemos errores iguales uno para el otro. Así que en este
+caso, el elegimos el árbol con menor complejidad que es el árbol podado.
+
+\hypertarget{a-la-vista-de-la-proporciuxf3n-de-ventas-de-cada-clase-de-zumo-cuxf3mo-valoras-el-comportamiento-del-uxe1rbol-de-clasificaciuxf3n-intenta-mejorar-este-comportamiento-utilizando-bosques-aleatorios.-quuxe9-tasa-de-error-oob-obtienes-cuuxe1les-son-las-variables-muxe1s-importantes-a-la-hora-de-determinar-quuxe9-zumo-va-a-comprar-el-consumidor}{%
+\subsection{A la vista de la proporción de ventas de cada clase de zumo,
+¿cómo valoras el comportamiento del árbol de clasificación? Intenta
+mejorar este comportamiento utilizando bosques aleatorios. ¿Qué tasa de
+error OOB obtienes? ¿Cuáles son las variables más importantes a la hora
+de determinar qué zumo va a comprar el
+consumidor?}\label{a-la-vista-de-la-proporciuxf3n-de-ventas-de-cada-clase-de-zumo-cuxf3mo-valoras-el-comportamiento-del-uxe1rbol-de-clasificaciuxf3n-intenta-mejorar-este-comportamiento-utilizando-bosques-aleatorios.-quuxe9-tasa-de-error-oob-obtienes-cuuxe1les-son-las-variables-muxe1s-importantes-a-la-hora-de-determinar-quuxe9-zumo-va-a-comprar-el-consumidor}}
+
+Al observar como se comporta este árbol de clasficación podemos estudiar
+primeramente que la proporción de ventas de cada marca de zumo para cada
+conjunto es:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{prop.table}\NormalTok{(}\FunctionTok{table}\NormalTok{(OJ[train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)) }\CommentTok{\#Entranamiento}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##      CH      MM 
+## 0.60625 0.39375
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{prop.table}\NormalTok{(}\FunctionTok{table}\NormalTok{(OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)) }\CommentTok{\#Prueba}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##        CH        MM 
+## 0.6222222 0.3777778
+\end{verbatim}
+
+Podemos ver que no hay mucha diferencia entre las proporciones de venta
+de cada marca de jugo en los dos conjuntos. Esto sugiere que los
+conjuntos de entrenamiento y prueba se dividieron razonablemente bien al
+azar del conjunto de datos completo, y el modelo pudo clasificar con
+éxito ambas marcas de jugo en ambos conjuntos.
+
+Podemos \textbf{valorar} que el árbol tiene una buena especificidad, lo
+que se traduce en la capacidad de identificar correctamente la mayoría
+de los casos negativos. Como resultado, hay espacio para mejorar la
+capacidad del modelo para identificar con precisión los casos positivos.
+Sin embargo, la sensibilidad del modelo es bastante baja, lo que indica
+que hay un margen de mejora para identificar correctamente los casos
+positivos. La precisión del árbol es buena, pero no excelente. El árbol
+tiene margen de mejora para clasificar correctamente algunos casos, como
+lo muestra el valor de error global relativamente alto.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{metricas}\NormalTok{(mc\_podado\_val)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor      0.952381     0.627451 0.8296296    0.1703704
+\end{verbatim}
+
+\emph{Intentamos mejorarlo con utilizando bosques aleatorios.}
+
+\hypertarget{bagging}{%
+\subsection{Bagging}\label{bagging}}
+
+El objetivo principal de Bagging (Bootstrap Aggregating) es entrenar
+múltiples modelos utilizando varias muestras de entrenamiento que se
+obtienen al muestrear y reemplazar el conjunto de datos original.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(randomForest)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## randomForest 4.7-1.1
+\end{verbatim}
+
+\begin{verbatim}
+## Type rfNews() to see new features/changes/bug fixes.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{oj\_bag }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{OJ, }\AttributeTok{subset=}\NormalTok{train\_index, }\AttributeTok{ntree=}\DecValTok{500}\NormalTok{, }\AttributeTok{mtry=}\DecValTok{18}\NormalTok{, }\AttributeTok{importance =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{oj\_bag}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+##  randomForest(formula = Purchase ~ ., data = OJ, ntree = 500,      mtry = 18, importance = TRUE, subset = train_index) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 17
+## 
+##         OOB estimate of  error rate: 20.38%
+## Confusion matrix:
+##     CH  MM class.error
+## CH 399  86   0.1773196
+## MM  77 238   0.2444444
+\end{verbatim}
+
+Obtenemos una estimación \textbf{out-of-bag} (OOB) de 20.38\%.
+
+Al ver la matriz de confusión se puede ver que comete menos error cuando
+clasifica como CH, siendo así más fiable para decir cuando se elige CH.
+
+Pintamos la salida anterior, así obtenemos el cómo se comporta el error
+a medida que aumentamos el número de árboles.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(oj\_bag)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+Se observa un gran descenso del error hasta un poco después de los
+árboles 110 aproximadamente, cuando ultrapasa este punto se nota un
+pequeño aumento del error acompañados de puntos de constancia del error.
+Tenemos el error global (línea negra), el error de clasificar como CH
+(línea roja) y el error de clasifica como MM (línea negra).
+
+Tenemos un error de clasificación mayor que el del árbol podado. Antes
+teníamos con el árbol podado un error de 0.1703704.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mc\_bag }\OtherTok{\textless{}{-}}\NormalTok{ oj\_bag}\SpecialCharTok{$}\NormalTok{confusion[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{]}
+\FunctionTok{metricas}\NormalTok{(mc\_bag)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.8382353    0.7345679   0.79625      0.20375
+\end{verbatim}
+
+Aún así podemos verificar que métricas obtenemos sobre el conjunto de
+validación:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{oj\_bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(oj\_bag,}\AttributeTok{newdata=}\NormalTok{OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,])}
+\FunctionTok{mean}\NormalTok{(oj\_bag\_pred }\SpecialCharTok{!=}\NormalTok{ OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1851852
+\end{verbatim}
+
+Obtenemos una matriz de confusión para este árbol.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{table}\NormalTok{(oj\_bag\_pred,OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            
+## oj_bag_pred  CH  MM
+##          CH 152  34
+##          MM  16  68
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mc\_bag\_pred }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(oj\_bag\_pred, OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)}
+\FunctionTok{metricas}\NormalTok{(mc\_bag\_pred)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.9047619    0.6666667 0.8148148    0.1851852
+\end{verbatim}
+
+Se confirma que no hubo una mejora en el error en ninguno de los dos
+conjuntos.
+
+\hypertarget{bosques-aleatorios}{%
+\subsection{Bosques aleatorios}\label{bosques-aleatorios}}
+
+Utilizamos la recomendación de utilizar solo sqrt(p) variables
+predictoras.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\NormalTok{popt }\OtherTok{\textless{}{-}} \FunctionTok{trunc}\NormalTok{(}\FunctionTok{sqrt}\NormalTok{(}\DecValTok{18}\NormalTok{))}
+\NormalTok{oj\_rf }\OtherTok{\textless{}{-}} \FunctionTok{randomForest}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{OJ, }\AttributeTok{subset=}\NormalTok{train\_index, }\AttributeTok{ntree=}\DecValTok{500}\NormalTok{, }\AttributeTok{mtry=}\NormalTok{popt, }\AttributeTok{importance=}\NormalTok{T)}
+\NormalTok{oj\_rf}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+##  randomForest(formula = Purchase ~ ., data = OJ, ntree = 500,      mtry = popt, importance = T, subset = train_index) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 4
+## 
+##         OOB estimate of  error rate: 20.5%
+## Confusion matrix:
+##     CH  MM class.error
+## CH 404  81   0.1670103
+## MM  83 232   0.2634921
+\end{verbatim}
+
+La estimación out-of-bag (OOB) se ha aumentado un poco, al 20.5\%. Aún
+así podemos comprobar que métricas podemos tener con el conjunto de
+prueba:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{oj\_rf\_pred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(oj\_rf, }\AttributeTok{newdata=}\NormalTok{OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,])}
+\FunctionTok{mean}\NormalTok{(oj\_rf\_pred }\SpecialCharTok{!=}\NormalTok{ OJ[}\SpecialCharTok{{-}}\NormalTok{train\_index,]}\SpecialCharTok{$}\NormalTok{Purchase)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1703704
+\end{verbatim}
+
+El error de clasificación se pone igual que al del árbol podado. Podemos
+ver las \textbf{variables más importantes}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{importance}\NormalTok{(oj\_rf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                        CH        MM MeanDecreaseAccuracy MeanDecreaseGini
+## WeekofPurchase  6.6382087  8.694264            12.196544        28.946406
+## StoreID         7.6603763 14.469461            16.460260        21.499067
+## PriceCH         5.1612787  3.421899             7.155901         5.639893
+## PriceMM         2.4256239  5.663620             7.349724         6.272887
+## DiscCH          0.6629651  6.428414             4.941466         4.262464
+## DiscMM          5.0492630  7.617073            11.144651         5.355865
+## SpecialCH       2.0614202  6.570047             6.769480         3.445623
+## SpecialMM      -2.9449008 11.237982             9.178979         4.321306
+## LoyalCH        60.6871553 83.734449            90.777745       155.678184
+## SalePriceMM     5.9383574  9.888114            13.154893        11.362361
+## SalePriceCH     4.8396405  3.428337             6.358559         7.106994
+## PriceDiff       9.1433248 16.052283            18.983649        18.571671
+## Store7          6.6628377  9.954334            10.342098         6.045269
+## PctDiscMM       6.7526680  6.255180            11.395150         5.868678
+## PctDiscCH       1.6837633  5.967948             4.957308         4.298745
+## ListPriceDiff   7.7419833  8.323442            11.684408        10.781037
+## STORE           5.3836671 11.559578            11.845265        12.273028
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x }\OtherTok{\textless{}{-}} \FunctionTok{importance}\NormalTok{(oj\_rf)[,}\DecValTok{4}\NormalTok{] }\SpecialCharTok{/} \FunctionTok{max}\NormalTok{(}\FunctionTok{importance}\NormalTok{(oj\_rf)[,}\DecValTok{4}\NormalTok{])}
+\FunctionTok{sort}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      SpecialCH         DiscCH      PctDiscCH      SpecialMM         DiscMM 
+##     0.02213298     0.02737997     0.02761302     0.02775794     0.03440344 
+##        PriceCH      PctDiscMM         Store7        PriceMM    SalePriceCH 
+##     0.03622790     0.03769750     0.03883183     0.04029394     0.04565183 
+##  ListPriceDiff    SalePriceMM          STORE      PriceDiff        StoreID 
+##     0.06925207     0.07298621     0.07883589     0.11929527     0.13809942 
+## WeekofPurchase        LoyalCH 
+##     0.18593746     1.00000000
+\end{verbatim}
+
+Así que, las variables más importantes a la hora de comprar el zumo, son
+\texttt{LoyalCH,\ WeekofPurchase,\ StoreID,\ \ PriceDiff,\ STORE,\ SalePriceMM\ y\ ListPriceDiff}
+.
+
+\#2. Aplica los métodos de regresión logística, ADL y KNN a los datos
+del ejercicio anterior, con la misma muestra de entrenamiento y de test.
+Compara las matrices de confusión y los errores medios de clasificación
+de los tres métodos y decide con cuál te quedarías
+
+\#En nuestro conjuntode datos OJ hay una varibale cualitativa con la
+cual no podemos hacer los metodos de prediccion, por lo cual la quitamos
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ISLR)}
+\FunctionTok{data}\NormalTok{(OJ)}
+\FunctionTok{attach}\NormalTok{(OJ)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The following objects are masked from OJ (pos = 5):
+## 
+##     DiscCH, DiscMM, ListPriceDiff, LoyalCH, PctDiscCH, PctDiscMM,
+##     PriceCH, PriceDiff, PriceMM, Purchase, SalePriceCH, SalePriceMM,
+##     SpecialCH, SpecialMM, STORE, Store7, StoreID, WeekofPurchase
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{OJ\_new }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(OJ, }\AttributeTok{select =} \SpecialCharTok{{-}}\NormalTok{Store7)}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{\# Regresión logística}
+\NormalTok{modelo.logit }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{OJ\_new,}\AttributeTok{family=}\NormalTok{binomial)}
+
+\FunctionTok{library}\NormalTok{(vcd)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: grid
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'vcd'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:ISLR':
+## 
+##     Hitters
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{fp }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  variables}\OtherTok{\textless{}{-}}\DecValTok{0}
+\NormalTok{  constante}\OtherTok{\textless{}{-}}\FunctionTok{summary}\NormalTok{(modelo.logit)}\SpecialCharTok{$}\NormalTok{coef[,}\StringTok{"Estimate"}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+  \ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{2}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(}\FunctionTok{summary}\NormalTok{(modelo.logit)}\SpecialCharTok{$}\NormalTok{coef[,}\StringTok{"Estimate"}\NormalTok{])) \{}
+\NormalTok{    variables}\OtherTok{\textless{}{-}}\FunctionTok{summary}\NormalTok{(modelo.logit)}\SpecialCharTok{$}\NormalTok{coef[,}\StringTok{"Estimate"}\NormalTok{][i]}\SpecialCharTok{*}\NormalTok{x}
+\NormalTok{  \}}
+  \FunctionTok{exp}\NormalTok{(constante}\SpecialCharTok{+}\NormalTok{variables)}\SpecialCharTok{/}\NormalTok{(}\DecValTok{1}\SpecialCharTok{+}\FunctionTok{exp}\NormalTok{(constante}\SpecialCharTok{+}\NormalTok{variables))}
+\NormalTok{\}}
+
+\CommentTok{\# Hacer predicciones con el modelo}
+\NormalTok{predicciones }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(modelo.logit, }\AttributeTok{type=}\StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}} \FloatTok{0.5}
+\NormalTok{predicciones }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(predicciones }\SpecialCharTok{==} \ConstantTok{TRUE}\NormalTok{, }\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\#Matriz de confusion}
+\NormalTok{matriz.rl }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(OJ\_new}\SpecialCharTok{$}\NormalTok{Purchase, predicciones, }\AttributeTok{dnn=}\FunctionTok{c}\NormalTok{(}\StringTok{"predicciones"}\NormalTok{,}
+\StringTok{"observaciones"}\NormalTok{))}
+\FunctionTok{metricas}\NormalTok{(matriz.rl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.8522895    0.8066158  0.835514     0.164486
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Podemos graficar el resultado de matriz/tabla de confusión con la función \textasciigrave{}mosaic()\textasciigrave{}:}
+\FunctionTok{mosaic}\NormalTok{(matriz.rl,}\AttributeTok{shade=}\NormalTok{T,}\AttributeTok{colorize=}\NormalTok{T,}
+\AttributeTok{gp=}\FunctionTok{gpar}\NormalTok{(}\AttributeTok{fill=}\FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"green"}\NormalTok{,}\StringTok{"red"}\NormalTok{,}\StringTok{"red"}\NormalTok{,}\StringTok{"green"}\NormalTok{),}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+\hypertarget{adl}{%
+\section{ADL}\label{adl}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Primero comprobamos cuales son las variables mas fuertemente asociadas a Purchase}
+\NormalTok{modelo.logit }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data=}\NormalTok{OJ\_new,}\AttributeTok{family=}\NormalTok{binomial)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{coeficientes\_z }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(modelo.logit)}\SpecialCharTok{$}\NormalTok{coef[, }\StringTok{"z value"}\NormalTok{]}
+\NormalTok{coeficientes\_z\_ordenados }\OtherTok{\textless{}{-}} \FunctionTok{sort}\NormalTok{(coeficientes\_z, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{)}
+
+\NormalTok{nombres\_variables }\OtherTok{\textless{}{-}} \FunctionTok{row.names}\NormalTok{(}\FunctionTok{summary}\NormalTok{(modelo.logit)}\SpecialCharTok{$}\NormalTok{coef)}
+\NormalTok{variables\_fuertemente\_asociadas }\OtherTok{\textless{}{-}}\NormalTok{ nombres\_variables[}\FunctionTok{which}\NormalTok{(coeficientes\_z }\SpecialCharTok{\%in\%}\NormalTok{ coeficientes\_z\_ordenados[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{])]}
+
+\NormalTok{variables\_fuertemente\_asociadas}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "(Intercept)"    "WeekofPurchase" "StoreID"        "PriceCH"       
+##  [5] "DiscCH"         "DiscMM"         "SpecialCH"      "SpecialMM"     
+##  [9] "PctDiscCH"      "STORE"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Usamos las 9 variables mas significativas para hacer el analisis discriminante lineal}
+\FunctionTok{library}\NormalTok{(MASS)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{);}
+\NormalTok{modelo.qda }\OtherTok{\textless{}{-}} \FunctionTok{qda}\NormalTok{(Purchase }\SpecialCharTok{\textasciitilde{}}\NormalTok{ PriceCH}\SpecialCharTok{+}\NormalTok{PriceMM}\SpecialCharTok{+}\NormalTok{DiscCH}\SpecialCharTok{+}\NormalTok{DiscMM}\SpecialCharTok{+}\NormalTok{SpecialCH}\SpecialCharTok{+}\NormalTok{SpecialMM}\SpecialCharTok{+}\NormalTok{PctDiscMM}\SpecialCharTok{+}\NormalTok{PctDiscCH}\SpecialCharTok{+}\NormalTok{STORE, }\AttributeTok{data=}\NormalTok{OJ\_new, }\AttributeTok{CV=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{head}\NormalTok{(modelo.qda}\SpecialCharTok{$}\NormalTok{class)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] CH MM CH MM MM CH
+## Levels: CH MM
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{prediccion.qda}\OtherTok{\textless{}{-}}\NormalTok{modelo.qda}\SpecialCharTok{$}\NormalTok{class}
+\NormalTok{matriz.qda}\OtherTok{\textless{}{-}}\FunctionTok{table}\NormalTok{(}\AttributeTok{Predichos=}\NormalTok{prediccion.qda,}\AttributeTok{Verdaderos=}\NormalTok{Purchase)}
+\NormalTok{matriz.qda}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          Verdaderos
+## Predichos  CH  MM
+##        CH 524 228
+##        MM 129 189
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{m\_qda }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(matriz.qda)}
+\NormalTok{m\_qda}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.8024502    0.4532374 0.6663551    0.3336449
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Podemos graficar el resultado de matriz/tabla de confusión con la función \textasciigrave{}mosaic()\textasciigrave{}:}
+\FunctionTok{mosaic}\NormalTok{(matriz.qda,}\AttributeTok{shade=}\NormalTok{T,}\AttributeTok{colorize=}\NormalTok{T,}\AttributeTok{gp=}\FunctionTok{gpar}\NormalTok{(}\AttributeTok{fill=}\FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"green"}\NormalTok{,}\StringTok{"red"}\NormalTok{,}\StringTok{"red"}\NormalTok{,}\StringTok{"green"}\NormalTok{),}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-28-1.pdf}
+
+\hypertarget{knn}{%
+\section{KNN}\label{knn}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\NormalTok{indices }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(OJ\_new), }\DecValTok{800}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{FALSE}\NormalTok{)}
+
+\NormalTok{validacion }\OtherTok{\textless{}{-}}\NormalTok{ OJ\_new[indices,]}
+\NormalTok{entrenamiento }\OtherTok{\textless{}{-}}\NormalTok{ OJ\_new[}\SpecialCharTok{{-}}\NormalTok{indices,]}
+\NormalTok{clasificador}\OtherTok{\textless{}{-}}\NormalTok{Purchase}
+
+\FunctionTok{library}\NormalTok{(class)}
+\NormalTok{kmax}\OtherTok{=}\DecValTok{15}
+\NormalTok{errork }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{kmax)\{}
+\NormalTok{  x}\OtherTok{\textless{}{-}}\FunctionTok{knn}\NormalTok{(}\AttributeTok{train=}\NormalTok{entrenamiento[, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{],}\AttributeTok{test=}\NormalTok{validacion[, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{],}\AttributeTok{cl=}\NormalTok{clasificador[}\SpecialCharTok{{-}}\NormalTok{indices],}\AttributeTok{k=}\NormalTok{i)}
+\NormalTok{errork[i]}\OtherTok{\textless{}{-}}\FunctionTok{metricas}\NormalTok{(}\FunctionTok{table}\NormalTok{(}\AttributeTok{Predichos=}\NormalTok{x,}\AttributeTok{Verdaderos=}\NormalTok{clasificador[indices]))[}\DecValTok{4}\NormalTok{]}
+
+\NormalTok{\}}
+\CommentTok{\#Dibujamos los valores para saber cual es el valor de k optimo }
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{kmax),errork,}\AttributeTok{type=}\StringTok{"l"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Ahora probamos usando solo las 9 variables mas significativas}
+\NormalTok{predictors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"PriceCH"}\NormalTok{, }\StringTok{"PriceMM"}\NormalTok{, }\StringTok{"DiscCH"}\NormalTok{, }\StringTok{"DiscMM"}\NormalTok{,}\StringTok{"SpecialCH"}\NormalTok{, }\StringTok{"SpecialMM"}\NormalTok{, }\StringTok{"PctDiscMM"}\NormalTok{, }\StringTok{"PctDiscCH"}\NormalTok{,}\StringTok{"STORE"}\NormalTok{)}
+\NormalTok{errork\_new }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{(i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{kmax)\{}
+\NormalTok{  x}\OtherTok{\textless{}{-}}\FunctionTok{knn}\NormalTok{(}\AttributeTok{train=}\NormalTok{entrenamiento[, predictors],}\AttributeTok{test=}\NormalTok{validacion[, predictors],}\AttributeTok{cl=}\NormalTok{clasificador[}\SpecialCharTok{{-}}\NormalTok{indices],}\AttributeTok{k=}\NormalTok{i)}
+\NormalTok{errork\_new[i]}\OtherTok{\textless{}{-}}\FunctionTok{metricas}\NormalTok{(}\FunctionTok{table}\NormalTok{(}\AttributeTok{Predichos=}\NormalTok{x,}\AttributeTok{Verdaderos=}\NormalTok{clasificador[indices]))[}\DecValTok{4}\NormalTok{]}
+\NormalTok{\}}
+\FunctionTok{plot}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\NormalTok{kmax),errork\_new,}\AttributeTok{type=}\StringTok{"l"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Trabajo2_Grupo2_files/figure-latex/unnamed-chunk-29-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Mejora significativamente usando las 9 variables , por lo cual utilizaremos estas 9 variables y un k=8}
+
+\NormalTok{  x}\OtherTok{\textless{}{-}}\FunctionTok{knn}\NormalTok{(}\AttributeTok{train=}\NormalTok{entrenamiento[, predictors],}\AttributeTok{test=}\NormalTok{validacion[, predictors],}\AttributeTok{cl=}\NormalTok{clasificador[}\SpecialCharTok{{-}}\NormalTok{indices],}\AttributeTok{k=}\DecValTok{8}\NormalTok{)}
+\NormalTok{matrizKNN}\OtherTok{\textless{}{-}}\FunctionTok{table}\NormalTok{(x, validacion}\SpecialCharTok{$}\NormalTok{Purchase)}
+\FunctionTok{metricas}\NormalTok{(matrizKNN)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Especificidad Sensibilidad Exactitud Error global
+## valor     0.7773196    0.5873016    0.7025       0.2975
+\end{verbatim}
+
+\#Conclusion ordenamos los errores obtenidos de los distintos metodos de
+prediccion
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:MASS':
+## 
+##     select
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:randomForest':
+## 
+##     combine
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{adl\_metricas }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(matriz.qda)[}\DecValTok{4}\NormalTok{]}
+\NormalTok{rl\_metricas }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(matriz.rl)[}\DecValTok{4}\NormalTok{]}
+\NormalTok{knn\_metricas }\OtherTok{\textless{}{-}} \FunctionTok{metricas}\NormalTok{(matrizKNN)[}\DecValTok{4}\NormalTok{]}
+
+\NormalTok{tabla\_metricas }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(Métricas }\OtherTok{=} \FunctionTok{c}\NormalTok{(}\StringTok{"Discriminante Lineal"}\NormalTok{, }\StringTok{"Regresión Logística"}\NormalTok{, }\StringTok{"KNN V. Cercanos"}\NormalTok{),}
+                             \AttributeTok{Valor\_Error =} \FunctionTok{c}\NormalTok{(adl\_metricas, rl\_metricas, knn\_metricas))}
+
+\NormalTok{tabla\_metricas\_ }\OtherTok{\textless{}{-}}\NormalTok{ tabla\_metricas }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(Valor\_Error))}
+\NormalTok{tabla\_metricas\_}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Métricas Valor_Error
+## 1 Discriminante Lineal   0.3336449
+## 2      KNN V. Cercanos   0.2975000
+## 3  Regresión Logística   0.1644860
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Segun los datos obtenidos el mejor metodo para realizar la prediccion el de regresión logística disminuyendo el error hasta la mitad del valor de los otros errores obtenidos }
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

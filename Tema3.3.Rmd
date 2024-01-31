@@ -1,0 +1,281 @@
+---
+title: "Tema3.3 Regresion no parametrica"
+output: html_document
+date: "2023-02-22"
+---
+La desigualdad estricta la solemos poner atrás.
+Establecemos la semilla al principio.
+
+## Problema 1
+
+Programar una funcion en R que calcule los valores del algoritmo KNNN para cualquier K<n, en el caso de un conjunto de puntos de la froma {(x1,y1)....(xn,yn)}, para cualquier punto a. Pintar la gráfica con la regresión KNN para distintos valores de K y a propiados 
+
+```{r}
+vecinos<-function(x,y,k,a){
+  #lo primero que va a necesitar el algoritmo es saber la longitud de los vectores x e y que deben de tener la misma longitud
+  n<-length(x)
+  indices<-c()#vamos a usar un vector de indices
+  #vamos a ordenar las distancias de "x" a "a"
+  s<-sort(abs(x-a))
+  #hacemos un bucle
+  for(i in 1:n){
+    #si el valor absoluto de a-x[i] guardammos el i en el vector de indices
+    if(abs(a-x[i])<=s[k]){
+        indices<-c(indices,i)
+    }
+  }
+   v<-mean(y[indices])
+    #plot(x,y,pch=19)
+    #points(a,v,col="red",pch=20)
+    return(v)
+  
+}
+x<-seq(-5,5,0.5)
+y<-sin(x)
+a<-seq(-5,5,0.1)
+vecinos(x,y,1,a[1])
+```
+Para ver la funcion escalonada:
+```{r}
+v1<-c()
+for(i in 1:length(a)){
+  v1[i]<-vecinos(x,y,1,a[i])
+}
+v2<-c()
+for(i in 1:length(a)){
+  v2[i]<-vecinos(x,y,2,a[i])
+}
+plot(a,sin(a),type="l")+
+lines(a,v1,type="l",col="red",lwd=1.5)+
+lines(a,v2,type="l",col="green",lwd=1.5)
+
+X<-matrix(c(1,2,3,2,4,5,3,1,0),nrow=3)
+
+x<-c(6,7,8)
+Z<-rbind(X,x)
+library(stats)
+dist(Z,method = "euclidean")
+
+```
+---
+## Problema 2
+---
+```{r}
+vecinos2<-function(X,y,k,a){
+  n<-nrow(X)
+  p<-ncol(X)
+  indices<-c()#vamos a usar un vector de indices y de distancias
+  distancias<-c()
+  for(j in 1:n){
+    distancias[j]<-dist(rbind(X[j,],a),method = "euclidean") #calculamos la distancia euclidea
+  }
+  
+  #vamos a ordenar las distancias 
+  s<-sort(distancias)
+  #hacemos un bucle
+  for(i in 1:n){
+    #si el valor absoluto de a-x[i] guardammos el i en el vector de indice
+    if(distancias[i]<=s[k]){
+        indices<-c(indices,i)
+    }
+  }
+   v<-mean(y[indices])
+    plot(x,y,pch=19)
+    points(a,v,col="red",pch=20)
+    return(v)
+  
+}
+
+alberto<-c(7,8,5)
+elisa<-c(8,9,3)
+manuel<-c(5,6,9)
+ruben<-c(4,6,3)
+ana<-c(9,10,8)
+y<-c(6,5,8,5,9.5)
+a<-c(6,7,8)
+X<-rbind(alberto,elisa,manuel,ruben,ana)
+vecinos2(X,y,1,a)
+```
+
+Vamos a crear una matriz de datos
+```{r}
+p<-250 #queremos 250 elementos
+n<-10000
+#vamos a generar un vector de media y otro de desviacion tipica
+set.seed(1)
+m<-runif(p,0,10)#vector de p elementos con una uniforme de 0 a 10
+sd<-runif(p,1,2.5)
+
+datos<-rnorm(n,m[1],sd[1])
+
+for(i in 2:p){
+  datos<-rbind(datos,rnorm(n,m[i],sd[i]))
+}
+
+#vamos a convertir datos de vector a matriz
+datos<-matrix(datos,nrow=p,byrow=T)
+dim(datos)
+
+a<-rnorm(n,2,1)
+y<-m+runif(p,-0.5,1)
+
+system.time(kv<-vecinos2(x=datos,y=y,k=20,a=a))
+```
+Debeeria de salir una tabla(que a mi no me sale), user-> lo que usa la sesion en evaluar nuestro algoritmo
+System->tiempo que usa en hacer procesos en segundo plano, no tiene que ver con el algoritmo como tal( abrir o cerrar archivos, cnsultar cosas...)
+
+Si no nos indicann cuantos K usar puede ser util usar la validación cruzada, a mayor K mas suave es la funcion obtennida pero si lo suavizamos demasiado se pueden perder algunas características que nos interesen conocer.
+
+Vamos a usar la validacion cruzada por k-fold
+donde k=10.
+
+## Vamos a hacer una regresion ritge
+```{r}
+#install.packages("faraway")
+library(faraway)
+data("meatspec")
+attach(meatspec)
+dim(meatspec)
+```
+tenemos 215 muestras de carne y 101 variables.
+La variable objetivo es "fat"
+Vamos a dividir nuestro conjunto de datos en uno de validacion y otro de test
+```{r}
+set.seed(100)
+id_train<-sample(1:nrow(meatspec),size=0.7*nrow(meatspec),replace=F)#nnuestro entrenamiento
+train<-meatspec[id_train,]
+validacion<-meatspec[-id_train,]
+test<-validacion
+#Si queremos ver como se comporta podemos hacer un modelo con todas las variables
+modelo<-lm(fat~.,data=train)
+summary(modelo)
+```
+Podemo ver que el modelo ajusta muy bien, acierta el 99,385 de las veces.
+Vamos a ver el error que comete con los datos de entrenamiento
+```{r}
+ECM_train=mean(residuals(modelo)^2)
+ECM_train
+```
+Vamos a ver como predice
+```{r}
+pred<-predict(modelo,newdata = test)
+#hacemos la diferencia entre las predicciones y los valores reales de fat en entrenamiento
+ECM_test<-mean((test$fat-pred)^2)
+ECM_test 
+```
+Si compareamos ECM_test vs ECM_train podemos ver como el error cuadratico medio es muy grande comparado con el otro . Esto se debe a que hay un sobreajuste 
+Hay una funcion estadistica que nos permite hacer una seleccion de variable
+
+```{r}
+library(stats)
+#la forula es fat siguiendo todas las variables 
+modelo_s<-step(lm(formula=fat~.,data = train),direction="backward",
+               scope=list(upper=~.,lower=~1),trace=F)
+length(modelo_s$coefficients)
+```
+Vamos a probar como se comportaria el modelo con los 70 coeficientes
+
+```{r}
+ECM_train_s<-mean(residuals(modelo_s)^2)
+pred_s<-predict(modelo_s,newdata = test)  
+
+ECM_test_s<-mean((pred_s-test$fat)^2)
+
+ECM_test_s #es muy grande y seguimos teniendo sobre ajuste
+
+
+```
+Vamos a usar ridge para ver si añadiendo la penalizacion coonsigue corregir el problema de sobreajuste.
+
+## Ridge 
+```{r}
+#install.packages("glmnet")
+library(glmnet)
+
+x_train<-model.matrix(fat~.,data=train)[,-1] #matriz de predictores de entrenamientos,, le vamos a decir que quite primera la variable $fat.
+y_train<-train$fat
+
+x_test<-model.matrix(fat~.,data=test)[,-1]
+y_test<-test$fat
+
+#para hascer ridge tiene que valer alpha 0 y automaticamente se estandarizan los datos
+modelo_ridge<-glmnet(x=x_train,y=y_train,alpha=0)
+###plot(x=c(0:9999),y=modelo_ridge$beta)
+
+
+```
+cv.glmnet()#nos permite hacer validacion cruzada sobre el modelo glmenet, permitiendo seleccionar un valor optimo para lambda
+```{r}
+modelo_lambda<-cv.glmnet(x=x_train,y=y_train,alpha=0,type.measure = "mse",
+                         standardize=T)
+plot(modelo_lambda)
+mejor_lambda<-modelo_lambda$lambda.min #el mejor lambda es el minimoç
+
+#metemos a nuestro modelo el lambda que nos ha salido
+library(dplyr)
+library(ggplot2)
+modelo_ridge<-glmnet(x=x_train,y=y_train,alpha=0,lambda = mejor_lambda)
+df_coeficientes<-coef(modelo_ridge)%>%
+  as.matrix()%>%
+  as_tibble(rownames="predictor")%>%
+  rename(coeficiente=s0)
+df_coeficientes %>% filter(predictor!="(Intercept)") %>% ggplot(aes(x=predictor,y=coeficiente))+
+  geom_col()+
+  labs(title = "Coeficientes del modelo Ridge")+
+  theme_bw()
+```
+
+Vamos a estudiar los errores del modelo Ridge
+```{r}
+pred_train<-predict(modelo_ridge,newx=x_train)
+MSE_train_ridge<-mean((pred_train-y_train)^2)
+MSE_train_ridge
+
+pred_test<-predict(modelo_ridge,newx=x_test)
+MSE_test_ridge<-mean((pred_test-y_test)^2)
+MSE_test_ridge
+
+```
+
+El modelo laso hace una seleccion de variable
+
+##    Vamos a hacer Lasso
+```{r}
+modelo_lambda_L<-cv.glmnet(x=x_train,y=y_train,alpha=1,type.measure = "mse",
+                         standardize=T)
+plot(modelo_lambda_L)
+mejor_lambda_L<-modelo_lambda_L$lambda.min #el mejor lambda es el minimoç
+
+#metemos a nuestro modelo el lambda que nos ha salido
+modelo_lasso<-glmnet(x=x_train,y=y_train,alpha=1,lambda = mejor_lambda_L)
+df_coeficientes_L<-coef(modelo_lasso)%>%
+  as.matrix()%>%
+  as_tibble(rownames="predictor")%>%
+  rename(coeficiente=s0)
+df_coeficientes_L %>% filter(predictor!="(Intercept)") %>% ggplot(aes(x=predictor,y=coeficiente))+
+  geom_col()+
+  labs(title = "Coeficientes del modelo Ridge")+
+  theme_bw()
+
+#Vamos a ver cuales son los coeficientes exactos
+
+df_coeficientes_L %>% filter(predictor!="(Intercept)",
+                             coeficiente!=0)
+#Vamos a ver como se comportan 
+pred_train_L<-predict(modelo_lasso,newx=x_train)
+MSE_train_L<-mean((pred_train_L-y_train)^2)
+MSE_train_L
+
+pred_test_L<-predict(modelo_lasso,newx=x_test)
+MSE_test_L<-mean((pred_test_L-y_test)^2)
+MSE_test_L
+```
+
+Este modelo es mucho mas apropiado para el problema, por que el error es el mas pequeño de los tres que hemos evaluado.
+```{r}
+ECM_test
+ECM_test_s
+MSE_test_ridge
+MSE_test_L
+```
+Como vemos el de laso es el mas pequeño, aqui hemos comparado como se comportan estos modelos en prediccion con una validacion cruzada simple, podriamos haber añadido el modelo de los K-vecinos mas cercanos.

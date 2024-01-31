@@ -1,0 +1,261 @@
+---
+title: "Técnicas de aprendizaje no supervisado. Dendogramas y K-medias"
+author: "Luís Filipe Milhomem da Silva Paixão y Marcos Folguera Rivera"
+date: "2023-05-04"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    collapsed: true
+    smooth_scroll: true
+    theme: journal
+    highlight: kate
+    df_print: paged
+    code_folding: show
+---
+
+```{r}
+library(pgmm)
+data(wine)
+attach(wine)
+```
+# 1. El objetivo es utilizar K-medias con 𝐾 = 3 para dividir los datos en 3 grupos, sin utilizar la variable Type. Una vez obtenido el conjunto, comparar los grupos obtenidos con las distintas subvariedades definidas por Type
+##a) Utiliza el procedimiento de K-medias para particionar los datos en 𝐾 = 3 grupos utilizando únicamente las 27 variables numéricas
+```{r}
+library(pgmm)
+data(wine)
+attach(wine)
+library(stats)
+wine_num <- wine[,2:28] 
+k <- 3
+set.seed(1) 
+km_res <- kmeans(wine_num, k) #Aplicamos K-medias
+
+#La variación total se encuentra en:
+km_res$tot.withinss
+#Los grupos asignados los podemos recuperar con:
+clusters=km_res$cluster
+table(clusters, Type)
+#En esta matriz de pueden apreciar los 3 grupos  , y asignamos el grupo al valor mas alto (type=3 para el grupo=1 ,type=1 para el grupo=2 y type=2 para el grupo=3) el proceso de selecion lo haremos en el siguiente apartado.
+
+```
+#b) Construye la matriz de confusión. Teniendo en cuenta que los subgrupos pueden renombrarse, ¿cuál es el porcentaje de acierto de este modelo?
+```{r}
+
+table(clusters, Type)
+#asignar el grupo 1 a la subvariedad 3, grupo 2 a la subvariedad 1 ,grupo 3 a la subvariedad 2
+sub_grupo <- c(3, 1, 2) 
+sub_grupo_clusters <- sub_grupo[clusters] 
+
+# Construimos la matriz de confusión
+mc <- table(sub_grupo_clusters, Type)
+mc
+
+# Calculamos el porcentaje de acierto
+correctos <- sum(diag(mc))
+accuracy <- correctos / nrow(wine_num) * 100
+accuracy
+```
+#c) Normaliza las variables predictoras y repite el proceso de K-medias para 𝐾 = 3
+```{r}
+wine_norm <- scale(wine_num) 
+set.seed(1) 
+km_res_norm <- kmeans(wine_norm, k) 
+clusters_norm <- km_res_norm$cluster 
+table_clusters_type_norm <- table(clusters_norm, Type)
+sub_grupo_norm <- apply(table_clusters_type_norm, 1, which.max)
+sub_grupo_clusters_norm <-sub_grupo_norm[clusters_norm]
+mc_norm <- table(sub_grupo_clusters_norm, Type)
+mc_norm
+accuracy_norm <- sum(diag(mc_norm)) / sum(mc_norm)
+accuracy_norm
+#el modelo con normalización de variables tiene una precisión del 97.75% lo que mejora claramente el anterior
+
+```
+#d) Compara el porcentaje de acierto del algoritmo tras normalizar las variables predictoras. ¿Merece la pena normalizar las variables?
+```{r}
+mejora_porcentaje = ((0.9775281 - 0.741573) / 0.741573) * 100
+mejora_porcentaje
+#el modelo con normalización de variables tiene una mejora del 31.82% en comparación con el modelo sin normalización de variables. 
+#Por tanto claramente merece la pena normalizar 
+```
+#e) Explora la posible existencia de más subvariedades a partir de los resultados obtenidos con Kmedias utilizando K=1,2,3,...,10. ¿Cuántos subgrupos parece haber en este conjunto de datos?
+```{r}
+library(pgmm)
+data(wine)
+wine_num <- wine[,2:14] 
+set.seed(1)
+inertia <- vector()
+Wtot<-c()
+for(k in 1 :10){
+  Wtot[k]<-kmeans(x,centers=k,nstart = 20)$tot.withinss
+  
+}
+plot(x=c(1:10),y=Wtot)
+#Para cada valor de K, podemos calcular la suma total de cuadrados dentro de los grupos =inercia
+#Obtenemos un gráfico que muestra cómo la inercia disminuye a medida que aumentamos el número de grupos
+#Como los datos representan diferentes tipos de vino y a partir de K=3 la disminución es mucho más lenta ,esto sugiere que hay al menos 3 subgrupos en los datos que coindice con los 3 tipos de vinos del conjunto de datos
+```
+
+
+# 2. Aplica el procedimiento de agrupamiento jerárquico sobre el conjunto de datos wine.
+
+El dendrograma es una herramienta visual que nos permite ver la estructura jerárquica de los datos y cómo se agrupan en diferentes niveles.
+
+## a) Realiza un dendograma con enlace único haciendo uso de los 27 predictores del conjunto wine. Representa el dendograma y muestra los 3 grupos seleccionados.
+
+```{r}
+wine_dist <- dist(wine[,1:27])
+```
+
+```{r}
+wine_dend_unico <- hclust(wine_dist, method = "single")
+plot(wine_dend_unico, main="Enlace único"); rect.hclust(wine_dend_unico,k=3)
+
+```
+
+## b) Realiza un dendograma con enlace medio haciendo uso de los 27 predictores del conjunto wine. Representa el dendograma y muestra los 3 grupos seleccionados.
+
+```{r}
+wine_dend_medio <- hclust(wine_dist, method = "average")
+plot(wine_dend_medio, main="Enlace medio"); rect.hclust(wine_dend_medio,k=3)
+
+```
+
+## c) Realiza un dendograma con enlace completo haciendo uso de los 27 predictores del conjunto wine. Representa el dendograma y muestra los 3 grupos seleccionados.
+
+```{r}
+wine_dend_completo <- hclust(wine_dist, method = "complete")
+plot(wine_dend_completo, main="Enlace completo");rect.hclust(wine_dend_completo,k=3)
+
+```
+
+## d) Haciendo uso de la matriz de confusión, determina el porcentaje de acierto de cada uno de estos dendogramas a la hora de clasificar las 3 variedades de vino comparando sus resultados con los valores de Type. (De nuevo, ten en cuenta que los subconjuntos que ha creado el dendograma no tienen porqué tomar el mismo valor que toma en Type).
+
+Definimos la función `metricas` que nos permitirá obtener valores de nuestro interés como el error global.
+
+```{r}
+metricas<-function(mc){ #mc es una matriz de confusión
+  esp<-mc[1,1]/sum(mc[,1])
+  sen<-mc[2,2]/sum(mc[,2])
+  ag<-sum(diag(mc))/sum(mc)
+  eg<-1-ag
+  m<-cbind(esp,sen,ag,eg)
+  colnames(m)=c("Especificidad","Sensibilidad","Exactitud","Error global")
+  rownames(m)="valor"
+  m
+}
+```
+
+### El error para diferentes valores de k
+
+Con la función `cutree` utilizamos para cortar un dendograma en un número de determinados grupos. Aquí buscamos generar diferentes resultados para distintos agrupamientos con el objetivo de conseguir el mejor. Al cortar el dendrograma en diferentes valores de `k`, podemos obtener diferentes agrupamientos de los datos y evaluar la calidad de los clusters resultantes. Comparar los resultados de varios dendrogramas generados a partir de diferentes valores de k es importante para determinar el número óptimo de clusters para un conjunto de datos dado y evaluar la calidad de los clusters resultantes.
+
+```{r warning=FALSE}
+resultados_unico <- c()
+resultados_medio <- c()
+resultados_completo <- c()
+for(i in 2:10) {
+  wine_groups_unico <- cutree(wine_dend_unico, k = i)
+  resultados_unico[i] <- metricas(table(Type,wine_groups_unico))[4]
+  
+  wine_groups_medio <- cutree(wine_dend_medio, k = i)
+  resultados_medio[i] <- metricas(table(Type,wine_groups_medio))[4]
+  
+  wine_groups_completo <- cutree(wine_dend_completo, k=i)
+  resultados_completo[i] <- metricas(table(Type,wine_groups_completo))[4]
+}
+
+library(ggplot2)
+
+df <- data.frame(i = 1:10, 
+                 resultados_unico = resultados_unico, 
+                 resultados_medio = resultados_medio, 
+                 resultados_completo = resultados_completo)
+
+ggplot(df, aes(x = i)) +
+  geom_line(aes(y = resultados_unico, color = "Resultados Unico")) +
+  geom_line(aes(y = resultados_medio, color = "Resultados Medio")) +
+  geom_line(aes(y = resultados_completo, color = "Resultados Completo")) +
+  labs(title = "El error en distintos agrupamientos", 
+       x = "Número de grupos", 
+       y = "Error global") +
+  scale_color_manual(values = c("Resultados Unico" = "red", 
+                                "Resultados Medio" = "blue", 
+                                "Resultados Completo" = "green")) +
+  scale_x_continuous(breaks = seq(1, 10, 1))
+
+```
+
+Al observar el gráfico, podemos ver mejor como se comporta los dendrogramas con distintos valores de grupo. Con estos valores podemos sacar lo mejor de cada dendograma y su matriz de confusión.
+
+### Matriz de confusión y acierto
+
+Para cada dendrograma obtenemos su matriz de confusión y el porcentaje de acierto.
+
+#### Dendrograma único
+
+```{r}
+wine_groups_unico <- cutree(wine_dend_unico, k = which.min(resultados_unico))
+table(Type,wine_groups_unico)
+```
+
+```{r}
+mc_unico <- table(Type, wine_groups_unico)
+metricas(mc_unico)
+```
+
+```{r}
+1 - metricas(mc_unico)[4]
+```
+
+#### Dendrograma medio
+
+```{r}
+wine_groups_medio <- cutree(wine_dend_medio, k = which.min(resultados_medio))
+table(Type,wine_groups_medio)
+```
+
+```{r}
+mc_medio <- table(Type, wine_groups_medio)
+metricas(mc_medio)
+```
+
+```{r}
+1 - metricas(mc_medio)[4]
+```
+
+#### Dendrograma completo
+
+```{r}
+wine_groups_completo <- cutree(wine_dend_completo, k = which.min(resultados_completo))
+table(Type,wine_groups_completo)
+```
+
+```{r}
+mc_completo <- table(Type, wine_groups_completo)
+metricas(mc_completo)
+```
+
+```{r}
+1 - metricas(mc_completo)[4]
+```
+
+### Comparando resultados
+
+```{r}
+acierto_unico <- 1 - metricas(mc_unico)[4]
+acierto_medio <- 1 - metricas(mc_medio)[4]
+acierto_completo <- 1 - metricas(mc_completo)[4]
+tabla_aciertos <- data.frame(
+  Metodo = c("Enlace único", "Enlace medio", "Enlace completo"),
+  Acierto = c(round(acierto_unico * 100, 2), round(acierto_medio * 100, 2), round(acierto_completo * 100, 2))
+)
+
+tabla_aciertos
+```
+
+Al obtener el porcentaje de acierto de cada dendrograma podemos comparar estos resultados. Vemos el comportamiento de cada uno en relación al acierto a la hora de clasificar las variedades de vino. Teniendo en cuenta que los dendrogramas de *enlace único* y *completo* tienen un acierto bajo y muy cercano al otro, `32.58%` y `34.83%`, podemos decir que no son buenos para clasificar las 3 variedades de vinos, ya el de *enlace medio* presenta el mejor acierto con `65.17%`,
+
+## e) Compara los resultados obtenidos por los distintos dendogramas y el obtenido por el algoritmo de K medias (𝐾 = 3) que mejor comportamiento ha ofrecido. ¿Cuál permite diferenciar mejor las tres variedades de vino?
